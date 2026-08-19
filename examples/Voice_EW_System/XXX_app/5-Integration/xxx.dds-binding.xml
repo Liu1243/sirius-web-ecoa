@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- XXX 应用 DDS 中间件绑定, 与 EW_app / YYY_app 使用相同 domain -->
-<DDSBinding xmlns="http://www.ecoa.technology/ddsbinding">
-  <domain id="0"/>
-</DDSBinding>
-

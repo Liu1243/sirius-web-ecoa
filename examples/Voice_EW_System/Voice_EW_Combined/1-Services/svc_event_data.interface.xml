@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 事件数据(struct1)服务: 提供方发布设备状态, 消费方接收后改变自身状态 -->
-<serviceDefinition xmlns="http://www.ecoa.technology/interface-2.0">
-  <use library="Common_lib"/>
-  <operations>
-    <data name="event_data" type="Common_lib:event_data"/>
-  </operations>
-</serviceDefinition>
-

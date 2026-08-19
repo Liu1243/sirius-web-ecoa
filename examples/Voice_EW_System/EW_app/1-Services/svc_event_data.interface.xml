@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 事件数据(struct1)服务: 与 YYY_app 中定义保持一致, 经中间件(DDS)互联 -->
-<serviceDefinition xmlns="http://www.ecoa.technology/interface-2.0">
-  <use library="Common_lib"/>
-  <operations>
-    <data name="event_data" type="Common_lib:event_data"/>
-  </operations>
-</serviceDefinition>
-

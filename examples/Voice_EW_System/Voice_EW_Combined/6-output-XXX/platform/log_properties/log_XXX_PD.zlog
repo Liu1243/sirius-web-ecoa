@@ -1,6 +1,0 @@
-[formats]
-simple = "%m%n"
-[rules]
-XXX_PD.DEBUG    "./logs/log_XXX_PD.log"; simple
-XXX_PD_PF.DEBUG    "./logs/log_XXX_PD_PF.log"; simple
-

@@ -1,5 +1,0 @@
-[formats]
-simple = "%m%n"
-[rules]
-main_PF.DEBUG    "./logs/log_main_PF.log"; simple
-

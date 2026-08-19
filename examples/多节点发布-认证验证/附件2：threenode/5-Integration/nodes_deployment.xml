@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<nodesDeployment>
-  <logicalComputingNode id="main" ipAddress="192.168.248.129"/>
-  <logicalComputingNode id="machine0" ipAddress="192.168.248.129"/>//主机A的地址
-  <logicalComputingNode id="machine1" ipAddress="192.168.248.130"/>//主机B的地址
-  <logicalComputingNode id="machine2" ipAddress="192.168.248.131"/>//主机C的地址
-</nodesDeployment>

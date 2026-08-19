@@ -1,1 +1,0 @@
-/usr/bin/cc  -D_POSIX_C_SOURCE=200809L  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/PD_YYY_PD.dir/PD_YYY_PD.c.o -o ../bin/PD_YYY_PD   -L/opt/homebrew/opt/apr/lib  -Wl,-rpath,/opt/homebrew/opt/apr/lib ../lib/liblib_mycompYYYDevice.a ../lib/libecoa.a -lapr-1 -lrt -lm
