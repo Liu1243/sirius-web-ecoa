@@ -109,6 +109,8 @@ deployment/*
 *.deb
 vs-extension
 doc/*
+docs/
+examples/
 .worktrees/
 integration-tests-playwright
 .claude
