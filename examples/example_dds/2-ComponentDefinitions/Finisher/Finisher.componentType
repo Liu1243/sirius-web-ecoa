@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:service name="finish_interface">
+    <ecoa-sca:interface syntax="svc_finish"/>
+  </csa:service>
+</csa:componentType>

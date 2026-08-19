@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecoa:logicalSystem xmlns:ecoa="http://www.ecoa.technology/logicalsystem-2.0" id="cs1">
+
+  <!-- 电子自卫应用所在平台 -->
+  <logicalComputingPlatform ELIPlatformId="2" id="Platform_EW">
+    <logicalComputingNode id="machine_ew">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="6"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+</ecoa:logicalSystem>
+

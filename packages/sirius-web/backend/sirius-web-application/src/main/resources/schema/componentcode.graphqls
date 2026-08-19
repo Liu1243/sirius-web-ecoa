@@ -1,0 +1,127 @@
+type ComponentCodeVersion {
+  id: ID!
+  componentId: String!
+  componentName: String!
+  versionName: String!
+  commitMessage: String
+  author: String!
+  createdAt: String!
+  modelVersionId: String
+  codeContent: String!
+  tags: [ComponentCodeTag!]!
+}
+
+type ComponentCodeTag {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+type ComponentHistoryEntry {
+  componentId: String!
+  componentName: String!
+  versions: [ComponentCodeVersion!]!
+}
+
+type ComponentCodeHistory {
+  components: [ComponentHistoryEntry!]!
+}
+
+# Inputs
+input ComponentCodeHistoryInput {
+  projectId: ID!
+  id: ID
+}
+
+input ComponentCodeVersionInput {
+  versionId: ID!
+  id: ID
+}
+
+input ComponentCodeTagsInput {
+  projectId: ID!
+  id: ID
+}
+
+input CreateComponentCodeVersionInput {
+  projectId: ID!
+  componentId: String!
+  componentName: String!
+  versionName: String!
+  codeContent: String!
+  commitMessage: String
+  modelVersionId: String
+  id: ID
+}
+
+input DeleteComponentCodeVersionInput {
+  versionId: ID!
+  id: ID
+}
+
+input CreateComponentCodeTagInput {
+  projectId: ID!
+  name: String!
+  color: String!
+  id: ID
+}
+
+input AddTagToVersionInput {
+  versionId: ID!
+  tagId: ID!
+  id: ID
+}
+
+input RemoveTagFromVersionInput {
+  versionId: ID!
+  tagId: ID!
+  id: ID
+}
+
+# Payloads
+type ComponentCodeHistoryPayload {
+  history: ComponentCodeHistory!
+}
+
+type ComponentCodeVersionPayload {
+  version: ComponentCodeVersion!
+}
+
+type ComponentCodeTagsPayload {
+  tags: [ComponentCodeTag!]!
+}
+
+type CreateComponentCodeVersionPayload {
+  version: ComponentCodeVersion!
+}
+
+type DeleteComponentCodeVersionPayload {
+  versionId: ID!
+}
+
+type CreateComponentCodeTagPayload {
+  tag: ComponentCodeTag!
+}
+
+type AddTagToVersionPayload {
+  version: ComponentCodeVersion!
+}
+
+type RemoveTagFromVersionPayload {
+  version: ComponentCodeVersion!
+}
+
+# Extend Root Types
+extend type Query {
+  componentCodeHistory(input: ComponentCodeHistoryInput!): ComponentCodeHistoryPayload!
+  componentCodeVersion(input: ComponentCodeVersionInput!): ComponentCodeVersionPayload!
+  componentCodeTags(input: ComponentCodeTagsInput!): ComponentCodeTagsPayload!
+}
+
+extend type Mutation {
+  createComponentCodeVersion(input: CreateComponentCodeVersionInput!): CreateComponentCodeVersionPayload!
+  deleteComponentCodeVersion(input: DeleteComponentCodeVersionInput!): DeleteComponentCodeVersionPayload!
+  createComponentCodeTag(input: CreateComponentCodeTagInput!): CreateComponentCodeTagPayload!
+  addTagToVersion(input: AddTagToVersionInput!): AddTagToVersionPayload!
+  removeTagFromVersion(input: RemoveTagFromVersionInput!): RemoveTagFromVersionPayload!
+}

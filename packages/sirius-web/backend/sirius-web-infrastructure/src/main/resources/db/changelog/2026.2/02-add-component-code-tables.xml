@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2025 Obeo.
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ https://www.eclipse.org/legal/epl-2.0/
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  ~
+  ~ Contributors:
+  ~     Obeo - initial API and implementation
+  -->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="02-add-component-code-tables" author="obeo">
+
+        <createTable tableName="component_code_version">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="project_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="component_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="component_name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version_name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="commit_message" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="author" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model_version_id" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="component_code_version" baseColumnNames="project_id" constraintName="fk_component_code_version_project_id" referencedTableName="project" referencedColumnNames="id" />
+
+        <createTable tableName="component_code_tag">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="project_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="component_code_tag" baseColumnNames="project_id" constraintName="fk_component_code_tag_project_id" referencedTableName="project" referencedColumnNames="id" />
+
+        <createTable tableName="version_tag">
+            <column name="version_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="version_tag" columnNames="version_id,tag_id" />
+        <addForeignKeyConstraint baseTableName="version_tag" baseColumnNames="version_id" constraintName="fk_version_tag_version_id" referencedTableName="component_code_version" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="version_tag" baseColumnNames="tag_id" constraintName="fk_version_tag_tag_id" referencedTableName="component_code_tag" referencedColumnNames="id" />
+
+    </changeSet>
+</databaseChangeLog>

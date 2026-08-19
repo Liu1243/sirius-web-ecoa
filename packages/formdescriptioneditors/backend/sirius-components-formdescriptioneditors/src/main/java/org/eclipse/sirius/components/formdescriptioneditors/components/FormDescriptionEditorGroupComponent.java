@@ -1,0 +1,110 @@
+/*******************************************************************************
+ * Copyright (c) 2022, 2023 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.components.formdescriptioneditors.components;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.eclipse.emf.ecore.util.ComposedSwitch;
+import org.eclipse.emf.ecore.util.Switch;
+import org.eclipse.sirius.components.forms.GroupDisplayMode;
+import org.eclipse.sirius.components.forms.components.ToolbarActionComponent;
+import org.eclipse.sirius.components.forms.components.ToolbarActionComponentProps;
+import org.eclipse.sirius.components.forms.description.AbstractWidgetDescription;
+import org.eclipse.sirius.components.forms.description.ButtonDescription;
+import org.eclipse.sirius.components.forms.elements.GroupElementProps;
+import org.eclipse.sirius.components.representations.Element;
+import org.eclipse.sirius.components.representations.IComponent;
+import org.eclipse.sirius.components.representations.VariableManager;
+import org.eclipse.sirius.components.view.form.GroupDescription;
+
+/**
+ * The component used to render the form description editor group.
+ *
+ * @author arichard
+ */
+public class FormDescriptionEditorGroupComponent implements IComponent {
+
+    private static final String AQL_PREFIX = "aql:";
+
+    private final FormDescriptionEditorGroupComponentProps props;
+
+    private final Switch<AbstractWidgetDescription> converter;
+
+    public FormDescriptionEditorGroupComponent(FormDescriptionEditorGroupComponentProps props) {
+        this.props = props;
+        List<Switch<AbstractWidgetDescription>> widgetConverters = this.props.customWidgetConverterProviders().stream()
+                .map(provider -> provider.getWidgetConverter(props.formDescriptionEditorDescription(), props.variableManager()))
+                .toList();
+        Collection<Switch<AbstractWidgetDescription>> switches = new ArrayList<>();
+        switches.add(new ViewFormDescriptionEditorConverterSwitch(props.formDescriptionEditorDescription(), props.variableManager(), new ComposedSwitch<>(widgetConverters)));
+        switches.addAll(widgetConverters);
+        this.converter = new ComposedSwitch<>(switches);
+    }
+
+    @Override
+    public Element render() {
+        VariableManager variableManager = this.props.variableManager();
+        var groupDescription = variableManager.get(VariableManager.SELF, GroupDescription.class).get();
+        String id = this.props.formDescriptionEditorDescription().getTargetObjectIdProvider().apply(variableManager);
+        String label = this.getGroupLabel(groupDescription, "Group");
+        List<Element> childrenWidgets = new ArrayList<>();
+
+        groupDescription.getToolbarActions().forEach(viewToolbarActionDescription -> {
+            VariableManager childVariableManager = variableManager.createChild();
+            childVariableManager.put(VariableManager.SELF, viewToolbarActionDescription);
+            AbstractWidgetDescription toolbarActionDescription = this.converter.doSwitch(viewToolbarActionDescription);
+            if (toolbarActionDescription instanceof ButtonDescription buttonDescription) {
+                ToolbarActionComponentProps toolbarActionComponentProps = new ToolbarActionComponentProps(childVariableManager, buttonDescription);
+                childrenWidgets.add(new Element(ToolbarActionComponent.class, toolbarActionComponentProps));
+            }
+        });
+
+        groupDescription.getChildren().forEach(formElementDescription -> {
+            VariableManager childVariableManager = variableManager.createChild();
+            childVariableManager.put(VariableManager.SELF, formElementDescription);
+            AbstractWidgetDescription widgetDescription = this.converter.doSwitch(formElementDescription);
+            FormDescriptionEditorWidgetComponentProps widgetComponentProps = new FormDescriptionEditorWidgetComponentProps(childVariableManager, widgetDescription, this.props.widgetDescriptors());
+            childrenWidgets.add(new Element(FormDescriptionEditorWidgetComponent.class, widgetComponentProps));
+        });
+
+        GroupElementProps.Builder groupElementPropsBuilder = GroupElementProps.newGroupElementProps(id)
+                .label(label)
+                .displayMode(this.getGroupDisplayMode(groupDescription))
+                .children(childrenWidgets);
+        if (groupDescription.getBorderStyle() != null) {
+            groupElementPropsBuilder.borderStyle(new ContainerBorderStyleProvider(groupDescription.getBorderStyle()).build());
+        }
+
+        return new Element(GroupElementProps.TYPE, groupElementPropsBuilder.build());
+    }
+
+    public String getGroupLabel(org.eclipse.sirius.components.view.form.GroupDescription groupDescription, String defaultLabel) {
+        String widgetLabel = defaultLabel;
+        String name = groupDescription.getName();
+        String labelExpression = groupDescription.getLabelExpression();
+        if (labelExpression != null && !labelExpression.isBlank() && !labelExpression.startsWith(AQL_PREFIX)) {
+            widgetLabel = labelExpression;
+        } else if (name != null && !name.isBlank()) {
+            widgetLabel = name;
+        }
+        return widgetLabel;
+    }
+
+    private GroupDisplayMode getGroupDisplayMode(GroupDescription viewGroupDescription) {
+        org.eclipse.sirius.components.view.form.GroupDisplayMode viewDisplayMode = viewGroupDescription.getDisplayMode();
+        return GroupDisplayMode.valueOf(viewDisplayMode.getLiteral());
+    }
+
+}

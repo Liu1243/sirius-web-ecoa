@@ -1,0 +1,228 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.application.controllers.trees;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sirius.components.trees.tests.TreeEventPayloadConsumer.assertRefreshedTreeThat;
+
+import com.jayway.jsonpath.JsonPath;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import org.eclipse.sirius.components.collaborative.trees.dto.DropTreeItemInput;
+import org.eclipse.sirius.components.core.api.ErrorPayload;
+import org.eclipse.sirius.components.core.api.SuccessPayload;
+import org.eclipse.sirius.components.trees.tests.graphql.DropTreeItemMutationRunner;
+import org.eclipse.sirius.web.AbstractIntegrationTests;
+import org.eclipse.sirius.web.application.views.explorer.ExplorerEventInput;
+import org.eclipse.sirius.web.application.views.explorer.services.ExplorerDescriptionProvider;
+import org.eclipse.sirius.web.data.StudioIdentifiers;
+import org.eclipse.sirius.web.tests.data.GivenSiriusWebServer;
+import org.eclipse.sirius.web.tests.services.api.IGivenInitialServerState;
+import org.eclipse.sirius.web.tests.services.explorer.ExplorerEventSubscriptionRunner;
+import org.eclipse.sirius.web.tests.services.representation.RepresentationIdBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.test.StepVerifier;
+
+/**
+ * Integration tests of the drop tree item mutation in the explorer.
+ *
+ * @author frouene
+ */
+@Transactional
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class ExplorerDropTreeItemControllerTests extends AbstractIntegrationTests {
+
+    @Autowired
+    private IGivenInitialServerState givenInitialServerState;
+
+    @Autowired
+    private ExplorerEventSubscriptionRunner treeEventSubscriptionRunner;
+
+    @Autowired
+    private DropTreeItemMutationRunner dropTreeItemMutationRunner;
+
+    @Autowired
+    private RepresentationIdBuilder representationIdBuilder;
+
+    @BeforeEach
+    public void beforeEach() {
+        this.givenInitialServerState.initialize();
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a studio, when we drag and drop an item in the explorer, then the object is moved")
+    public void givenStudioWhenWeDragAndDropAnItemThenTheObjectIsMoved() {
+        var expandedIds = List.of(
+                StudioIdentifiers.DOMAIN_DOCUMENT.toString(),
+                StudioIdentifiers.DOMAIN_OBJECT.toString(),
+                StudioIdentifiers.ROOT_ENTITY_OBJECT.toString(),
+                StudioIdentifiers.NAMED_ELEMENT_ENTITY_OBJECT.toString()
+        );
+        var explorerRepresentationId = this.representationIdBuilder.buildExplorerRepresentationId(ExplorerDescriptionProvider.DESCRIPTION_ID, expandedIds, List.of());
+        var input = new ExplorerEventInput(UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(), explorerRepresentationId);
+        var flux = this.treeEventSubscriptionRunner.run(input).flux();
+
+        Consumer<Object> initialTreeContentConsumer = assertRefreshedTreeThat(tree -> {
+            assertThat(tree).isNotNull();
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).hasSize(3);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).hasSize(1);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).anyMatch(treeItem -> treeItem.getId()
+                    .equals(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()));
+        });
+
+        Runnable dropItemMutation = () -> {
+            DropTreeItemInput dropTreeItemInput = new DropTreeItemInput(
+                    UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(),
+                    explorerRepresentationId,
+                    List.of(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()),
+                    StudioIdentifiers.ROOT_ENTITY_OBJECT.toString(),
+                    -1
+            );
+            var result = this.dropTreeItemMutationRunner.run(dropTreeItemInput);
+            String typename = JsonPath.read(result.data(), "$.data.dropTreeItem.__typename");
+            assertThat(typename).isEqualTo(SuccessPayload.class.getSimpleName());
+
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            TestTransaction.start();
+        };
+
+        Consumer<Object> updateTreeContentConsumer = assertRefreshedTreeThat(tree -> {
+            assertThat(tree).isNotNull();
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).hasSize(4);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).hasSize(0);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).anyMatch(treeItem -> treeItem.getId()
+                    .equals(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()));
+        });
+
+        StepVerifier.create(flux)
+                .consumeNextWith(initialTreeContentConsumer)
+                .then(dropItemMutation)
+                .consumeNextWith(updateTreeContentConsumer)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a studio, when we drag and drop an item to a specific position in the explorer, then the object is moved")
+    public void givenStudioWhenWeDragAndDropAnItemToSpecificPositionThenTheObjectIsMoved() {
+        var expandedIds = List.of(
+                StudioIdentifiers.DOMAIN_DOCUMENT.toString(),
+                StudioIdentifiers.DOMAIN_OBJECT.toString(),
+                StudioIdentifiers.ROOT_ENTITY_OBJECT.toString(),
+                StudioIdentifiers.NAMED_ELEMENT_ENTITY_OBJECT.toString()
+        );
+        var explorerRepresentationId = this.representationIdBuilder.buildExplorerRepresentationId(ExplorerDescriptionProvider.DESCRIPTION_ID, expandedIds, List.of());
+        var input = new ExplorerEventInput(UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(), explorerRepresentationId);
+        var flux = this.treeEventSubscriptionRunner.run(input).flux();
+
+        Consumer<Object> initialTreeContentConsumer = assertRefreshedTreeThat(tree -> {
+            assertThat(tree).isNotNull();
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).hasSize(3);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).hasSize(1);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).anyMatch(treeItem -> treeItem.getId()
+                    .equals(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()));
+        });
+
+        Runnable dropItemMutation = () -> {
+            DropTreeItemInput dropTreeItemInput = new DropTreeItemInput(
+                    UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(),
+                    explorerRepresentationId,
+                    List.of(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()),
+                    StudioIdentifiers.DESCRIPTION_ATTRIBUTE_OBJECT.toString(),
+                    1
+            );
+            var result = this.dropTreeItemMutationRunner.run(dropTreeItemInput);
+            String typename = JsonPath.read(result.data(), "$.data.dropTreeItem.__typename");
+            assertThat(typename).isEqualTo(SuccessPayload.class.getSimpleName());
+
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            TestTransaction.start();
+        };
+
+        Consumer<Object> updateTreeContentConsumer = assertRefreshedTreeThat(tree -> {
+            assertThat(tree).isNotNull();
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).hasSize(4);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).hasSize(0);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).anyMatch(treeItem -> treeItem.getId()
+                    .equals(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()));
+        });
+
+        StepVerifier.create(flux)
+                .consumeNextWith(initialTreeContentConsumer)
+                .then(dropItemMutation)
+                .consumeNextWith(updateTreeContentConsumer)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a studio, when we drag and drop an item on itself in the explorer, then nothing is changed")
+    public void givenStudioWhenWeDragAndDropAnItemOnItselfTheNothingIsChanged() {
+        var expandedIds = List.of(
+                StudioIdentifiers.DOMAIN_DOCUMENT.toString(),
+                StudioIdentifiers.DOMAIN_OBJECT.toString(),
+                StudioIdentifiers.ROOT_ENTITY_OBJECT.toString(),
+                StudioIdentifiers.NAMED_ELEMENT_ENTITY_OBJECT.toString()
+        );
+        var explorerRepresentationId = this.representationIdBuilder.buildExplorerRepresentationId(ExplorerDescriptionProvider.DESCRIPTION_ID, expandedIds, List.of());
+        var input = new ExplorerEventInput(UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(), explorerRepresentationId);
+        var flux = this.treeEventSubscriptionRunner.run(input).flux();
+
+        Consumer<Object> initialTreeContentConsumer = assertRefreshedTreeThat(tree -> {
+            assertThat(tree).isNotNull();
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren()).hasSize(3);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).hasSize(1);
+            assertThat(tree.getChildren().get(1).getChildren().get(0).getChildren().get(1).getChildren()).anyMatch(treeItem -> treeItem.getId().equals(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()));
+        });
+
+        Runnable dropItemMutation = () -> {
+            DropTreeItemInput dropTreeItemInput = new DropTreeItemInput(
+                    UUID.randomUUID(), StudioIdentifiers.SAMPLE_STUDIO_EDITING_CONTEXT_ID.toString(),
+                    explorerRepresentationId,
+                    List.of(StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString()),
+                    StudioIdentifiers.NAME_ATTRIBUTE_OBJECT.toString(),
+                    -1
+            );
+            var result = this.dropTreeItemMutationRunner.run(dropTreeItemInput);
+            String typename = JsonPath.read(result.data(), "$.data.dropTreeItem.__typename");
+            assertThat(typename).isEqualTo(ErrorPayload.class.getSimpleName());
+
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            TestTransaction.start();
+        };
+
+        StepVerifier.create(flux)
+                .consumeNextWith(initialTreeContentConsumer)
+                .then(dropItemMutation)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+    }
+
+}

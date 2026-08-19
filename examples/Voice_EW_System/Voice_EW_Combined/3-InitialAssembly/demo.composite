@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  语音-电子自卫系统 初始装配(单工程联动版):
+  四个组件全部连线, 跨平台 wire 在部署时通过 wireMapping 映射到 UDP 链路:
+    (1) compYYYDevice  =svc_versioned_data(struct2, 周期5s)=> compVoiceMgmt
+    (2) compVoiceMgmt  =svc_event_data(struct1)=> compYYYDevice
+    (2) compXXXDevice  =svc_voice_msg(语音控制)=> compLLMModel =svc_json_cmd(JSON+topicID)=> compVoiceMgmt
+    (3) compXXXDevice  =svc_voice_msg(语音查询)=> compLLMModel =svc_vd_query(查询struct2的JSON)=> compVoiceMgmt
+-->
+<csa:composite xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0" name="demo" targetNamespace="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:component name="compYYYDevice">
+    <ecoa-sca:instance componentType="YYYDevice"/>
+    <csa:service name="svc_versioned_data"/>
+    <csa:reference name="svc_event_data"/>
+  </csa:component>
+  <csa:component name="compVoiceMgmt">
+    <ecoa-sca:instance componentType="VoiceManagement"/>
+    <csa:service name="svc_event_data"/>
+    <csa:service name="svc_json_cmd"/>
+    <csa:service name="svc_vd_query"/>
+    <csa:reference name="svc_versioned_data"/>
+  </csa:component>
+  <csa:component name="compLLMModel">
+    <ecoa-sca:instance componentType="LLMModel"/>
+    <csa:service name="svc_voice_msg"/>
+    <csa:reference name="svc_json_cmd"/>
+    <csa:reference name="svc_vd_query"/>
+  </csa:component>
+  <csa:component name="compXXXDevice">
+    <ecoa-sca:instance componentType="XXXDevice"/>
+    <csa:reference name="svc_voice_msg"/>
+  </csa:component>
+  <!-- 数据流(1): YYY -> 语音管理 -->
+  <csa:wire source="compVoiceMgmt/svc_versioned_data" target="compYYYDevice/svc_versioned_data"/>
+  <!-- 数据流(2): 语音管理 -> YYY -->
+  <csa:wire source="compYYYDevice/svc_event_data" target="compVoiceMgmt/svc_event_data"/>
+  <!-- 数据流(2)(3): XXX -> 大模型 -->
+  <csa:wire source="compXXXDevice/svc_voice_msg" target="compLLMModel/svc_voice_msg"/>
+  <!-- 数据流(2)(3): 大模型 -> 语音管理 -->
+  <csa:wire source="compLLMModel/svc_json_cmd" target="compVoiceMgmt/svc_json_cmd"/>
+  <csa:wire source="compLLMModel/svc_vd_query" target="compVoiceMgmt/svc_vd_query"/>
+</csa:composite>
+

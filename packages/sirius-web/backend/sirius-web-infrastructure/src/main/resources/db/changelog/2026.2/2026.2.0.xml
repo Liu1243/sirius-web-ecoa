@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+    <include file="db/changelog/2026.2/01-user-and-project-permissions.xml" />
+    <include file="db/changelog/2026.2/02-add-component-code-tables.xml" />
+    <include file="db/changelog/2026.2/03-add-import-status.xml" />
+    <include file="db/changelog/2026.2/04-unique-project-name.xml" />
+    <include file="db/changelog/2026.2/05-fix-component-code-version-author.xml" />
+</databaseChangeLog>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ Copyright (c) 2024, 2025 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+ 
+ SPDX-License-Identifier: EPL-2.0
+ 
+ Contributors:
+     Obeo - initial API and implementation
+-->
+
+<plugin
+      name="%pluginName"
+      id="com.dassault.edt.model.edit"
+      version="1.0.0"
+      provider-name="%providerName"
+      class="com.dassault.edt.model.provider.EdtEditPlugin$Implementation">
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="com.dassault.edt.model" export="true"/>
+      <import plugin="org.eclipse.emf.edit" export="true"/>
+      <import plugin="sirius-components-ecoa" export="true"/>
+      <import plugin="sirius-components-ecoa-edit" export="true"/>
+   </requires>
+
+   <runtime>
+      <library name=".">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtbin"
+            class="edtbin.provider.EdtbinItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtbin.provider.EdtbinItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtdeployment"
+            class="edtdeployment.provider.EdtdeploymentItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtdeployment.provider.EdtdeploymentItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtimplementation"
+            class="edtimplementation.provider.EdtimplementationItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtimplementation.provider.EdtimplementationItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtlogical"
+            class="edtlogical.provider.EdtlogicalItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtlogical.provider.EdtlogicalItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="EDTProject2"
+            class="edtproject.provider.EDTProjectItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtproject.provider.EDTProjectItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtqos"
+            class="edtqos.provider.EdtqosItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtqos.provider.EdtqosItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="EDTService"
+            class="edtinterface.provider.EDTInterfaceItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtinterface.provider.EDTInterfaceItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="EDTTypes"
+            class="edttype.provider.EDTTypeItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edttype.provider.EDTTypeItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="temp"
+            class="temp.provider.TempItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="temp.provider.TempItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtudp"
+            class="edtudp.provider.EdtudpItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtudp.provider.EdtudpItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+      <!-- @generated EDT -->
+      <factory
+            uri="edtuid"
+            class="edtuid.provider.EdtuidItemProviderAdapterFactory"
+            supportedTypes=
+              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+               org.eclipse.emf.edit.provider.ITreeItemContentProvider
+               org.eclipse.emf.edit.provider.IItemLabelProvider
+               org.eclipse.emf.edit.provider.IItemPropertySource
+               org.eclipse.emf.edit.provider.IItemStyledLabelProvider"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.edit.childCreationExtenders">
+      <!-- @generated EDT -->
+      <extender
+            uri="http://www.ecoa.technology/insertion-policy-2.0"
+            class="edtuid.provider.EdtuidItemProviderAdapterFactory$polChildCreationExtender"/>
+   </extension>
+
+</plugin>

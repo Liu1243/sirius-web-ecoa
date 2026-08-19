@@ -1,0 +1,93 @@
+/*******************************************************************************
+ * Copyright (c) 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.edt.views.details;
+
+import java.util.Objects;
+
+import org.eclipse.sirius.components.view.builder.generated.form.FormBuilders;
+import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.form.GroupDescription;
+import org.eclipse.sirius.components.view.form.GroupDisplayMode;
+import org.eclipse.sirius.components.view.form.PageDescription;
+import org.eclipse.sirius.components.view.form.TreeDescription;
+import org.eclipse.sirius.web.edt.messages.IEdtMessageService;
+import org.eclipse.sirius.web.edt.views.details.api.IPageDescriptionProvider;
+import org.springframework.stereotype.Service;
+
+/**
+ * Used to provide the custom page description for Step3 (InitialAssembly).
+ *
+ * @author EDT Team
+ */
+@Service("edtStep3PageDescriptionProvider")
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
+public class Step3PageDescriptionProvider implements IPageDescriptionProvider {
+
+    private static final String FOLDER_ICON = "aql:Sequence{'/icons/Folder.svg'}";
+
+    private final IEdtMessageService messageService;
+
+    public Step3PageDescriptionProvider(IEdtMessageService messageService) {
+        this.messageService = Objects.requireNonNull(messageService);
+    }
+
+    @Override
+    public PageDescription getPageDescription(IColorProvider colorProvider) {
+        var corePropertiesGroupDescription = this.getCorePropertiesGroupDescription();
+        var initialAssemblyGroupDescription = this.getInitialAssemblyGroupDescription();
+
+        return new FormBuilders().newPageDescription()
+                .name("Edt Step3 - InitialAssembly")
+                .domainType("edtproject:Step3")
+                .labelExpression("aql:'3-InitialAssembly'")
+                .groups(
+                        corePropertiesGroupDescription,
+                        initialAssemblyGroupDescription
+                )
+                .build();
+    }
+
+    private GroupDescription getCorePropertiesGroupDescription() {
+        return new FormBuilders().newGroupDescription()
+                .name("Core Properties")
+                .labelExpression(this.messageService.coreProperties())
+                .semanticCandidatesExpression("aql:self")
+                .displayMode(GroupDisplayMode.LIST)
+                .build();
+    }
+
+    private GroupDescription getInitialAssemblyGroupDescription() {
+        var groupDescription = new FormBuilders().newGroupDescription()
+                .name("Initial Assembly")
+                .labelExpression(this.messageService.initialAssembly())
+                .semanticCandidatesExpression("aql:self")
+                .displayMode(GroupDisplayMode.LIST)
+                .build();
+
+        groupDescription.getChildren().add(this.getInitialAssemblyWidget());
+
+        return groupDescription;
+    }
+
+    private TreeDescription getInitialAssemblyWidget() {
+        return new FormBuilders().newTreeDescription()
+                .name("Composite")
+                .labelExpression(this.messageService.composite())
+                .childrenExpression("aql:if self.eClass().name = 'Step3' then self.InitialAssembly else Sequence{} endif")
+                .treeItemLabelExpression("aql:if self.eClass().eAllStructuralFeatures.name->includes('name') then self.name else (if self.eClass().eAllStructuralFeatures.name->includes('Name') then self.Name else '' endif) endif")
+                .treeItemBeginIconExpression(FOLDER_ICON)
+                .isCheckableExpression("aql:false")
+                .isTreeItemSelectableExpression("aql:false")
+                .build();
+    }
+}

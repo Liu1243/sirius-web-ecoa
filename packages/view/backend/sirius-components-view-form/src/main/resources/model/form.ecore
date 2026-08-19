@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="form" nsURI="http://www.eclipse.org/sirius-web/form" nsPrefix="form">
+  <eClassifiers xsi:type="ecore:EEnum" name="FlexDirection">
+    <eLiterals name="row" literal="row"/>
+    <eLiterals name="rowReverse" value="1" literal="row-reverse"/>
+    <eLiterals name="column" value="2" literal="column"/>
+    <eLiterals name="columnReverse" value="3" literal="column-reverse"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="GroupDisplayMode">
+    <eLiterals name="LIST"/>
+    <eLiterals name="TOGGLEABLE_AREAS" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ContainerBorderLineStyle">
+    <eLiterals name="Solid"/>
+    <eLiterals name="Dashed" value="1"/>
+    <eLiterals name="Dotted" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="DateTimeType">
+    <eLiterals name="DATE_TIME"/>
+    <eLiterals name="DATE" value="1"/>
+    <eLiterals name="TIME" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormDescription" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//RepresentationDescription">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pages" upperBound="-1"
+        eType="#//PageDescription" containment="true" eKeys="#//PageDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formVariables" upperBound="-1"
+        eType="#//FormVariable" containment="true" eKeys="#//FormVariable/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormVariable">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="defaultValueExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PageDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//DomainType"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="semanticCandidatesExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preconditionExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="groups" upperBound="-1"
+        eType="#//GroupDescription" containment="true" eKeys="#//GroupDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolbarActions" upperBound="-1"
+        eType="#//ButtonDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GroupDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="displayMode" lowerBound="1"
+        eType="#//GroupDisplayMode" defaultValueLiteral="LIST"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="semanticCandidatesExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolbarActions" upperBound="-1"
+        eType="#//ButtonDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//FormElementDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borderStyle" eType="#//ContainerBorderStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalBorderStyles"
+        upperBound="-1" eType="#//ConditionalContainerBorderStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormElementDescription" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WidgetDescription" abstract="true" eSuperTypes="#//FormElementDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="helpExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="diagnosticsExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BarChartDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valuesExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="keysExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="yAxisLabelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//BarChartDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalBarChartDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="width" lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="500"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="height" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="250"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ButtonDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="buttonLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="imageExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//ButtonDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalButtonDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CheckboxDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//CheckboxDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalCheckboxDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DateTimeDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="stringValueExpression"
+        lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//DateTimeDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalDateTimeDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//DateTimeType"
+        defaultValueLiteral="DATE_TIME"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FlexboxContainerDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//FormElementDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="flexDirection" lowerBound="1"
+        eType="#//FlexDirection" defaultValueLiteral="row"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borderStyle" eType="#//ContainerBorderStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalBorderStyles"
+        upperBound="-1" eType="#//ConditionalContainerBorderStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ImageDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="urlExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxWidthExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LabelDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//LabelDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalLabelDescriptionStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LinkDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//LinkDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalLinkDescriptionStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ListDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="displayExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isDeletableExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//ListDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalListDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultiSelectDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidatesExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidateLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//MultiSelectDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalMultiSelectDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PieChartDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valuesExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="keysExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//PieChartDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalPieChartDescriptionStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RadioDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidatesExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidateLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//RadioDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalRadioDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RichTextDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SelectDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidatesExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="candidateLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//SelectDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalSelectDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SplitButtonDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
+        eType="#//ButtonDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TextAreaDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//TextareaDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalTextareaDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TextfieldDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//TextfieldDescriptionStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalTextfieldDescriptionStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TreeDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="childrenExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="treeItemLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isTreeItemSelectableExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="treeItemBeginIconExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="treeItemEndIconsExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isCheckableExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="checkedValueExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SliderDescription" eSuperTypes="#//WidgetDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="minValueExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxValueExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentValueExpression"
+        lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isEnabledExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WidgetDescriptionStyle" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="WidgetGridLayout" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="gridTemplateColumns" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="gridTemplateRows" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelGridRow" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelGridColumn" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="widgetGridRow" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="widgetGridColumn" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="gap" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BarChartDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="barsColor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalBarChartDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//BarChartDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ButtonDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalButtonDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//ButtonDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CheckboxDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalCheckboxDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//CheckboxDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DateTimeDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="italic" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bold" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalDateTimeDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//DateTimeDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LabelDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalLabelDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//LabelDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LinkDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalLinkDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//LinkDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ListDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalListDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//ListDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MultiSelectDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="showIcon" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalMultiSelectDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//MultiSelectDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="PieChartDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="colors" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="strokeWidth" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="strokeColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalPieChartDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//PieChartDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RadioDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalRadioDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//RadioDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SelectDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="showIcon" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalSelectDescriptionStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//SelectDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TextareaDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalTextareaDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//TextareaDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TextfieldDescriptionStyle" eSuperTypes="#//WidgetDescriptionStyle ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//WidgetGridLayout">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="backgroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="foregroundColor" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalTextfieldDescriptionStyle"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//TextfieldDescriptionStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ContainerBorderStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borderColor" lowerBound="1"
+        eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderRadius" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="3"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderSize" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderLineStyle" eType="#//ContainerBorderLineStyle"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalContainerBorderStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//ContainerBorderStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FormElementFor" eSuperTypes="#//FormElementDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iterator" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="it"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iterableExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//FormElementDescription" containment="true" eKeys="#//FormElementDescription/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormElementIf" eSuperTypes="#//FormElementDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="predicateExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//FormElementDescription" containment="true"/>
+  </eClassifiers>
+</ecore:EPackage>

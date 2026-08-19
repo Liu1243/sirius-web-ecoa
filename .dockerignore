@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+**/target/
+**/dist/
+**/build/
+
+# IDE files
+.idea/
+.vscode/
+.cursor/
+*.iml
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (not needed for build)
+doc/
+docs/
+*.adoc
+*.md
+CHANGELOG*
+CONTRIBUTING
+DEPENDENCIES
+LICENSE
+NOTICE
+
+# Tests (not needed for Docker build)
+integration-tests-cypress/
+integration-tests-playwright/
+vscode-extension/
+test-results/
+playwright-report/
+
+# Temp files
+*.log
+compile.log
+.turbo/
+
+# Docker files
+docker-compose.yml
+Dockerfile.*
+
+# edt-tmp (desktop Eclipse files, not needed)
+edt-tmp/
+
+# 运行时数据目录（通过 volume 挂载，不需要打入镜像）
+workspace/
+
+# Maven 本地仓库缓存（由 additional_contexts 注入，不从 build context 读取）
+.m2/
+
+# ECOA Tools Python 服务（有独立的 build context，Dockerfile.all 不需要）
+ecoa-tools/
+
+# 示例文件
+examples/
+
+# 脚本（不需要打入镜像）
+scripts/
+
+# 部署配置（运行时用，不需要打入镜像）
+deployment/

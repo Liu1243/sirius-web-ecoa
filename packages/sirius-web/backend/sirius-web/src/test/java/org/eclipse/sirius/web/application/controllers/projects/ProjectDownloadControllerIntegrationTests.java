@@ -1,0 +1,722 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2026 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.application.controllers.projects;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.zip.ZipInputStream;
+
+import org.eclipse.sirius.web.AbstractIntegrationTests;
+import org.eclipse.sirius.web.data.MultiEditingContextFlowIdentifiers;
+import org.eclipse.sirius.web.data.StudioIdentifiers;
+import org.eclipse.sirius.web.data.TestIdentifiers;
+import org.eclipse.sirius.web.tests.data.GivenSiriusWebServer;
+import org.eclipse.sirius.web.tests.services.api.IGivenInitialServerState;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+/**
+ * Integration tests of the project download controllers.
+ *
+ * @author sbegaudeau
+ */
+@Transactional
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class ProjectDownloadControllerIntegrationTests extends AbstractIntegrationTests {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private IGivenInitialServerState givenInitialServerState;
+
+    @BeforeEach
+    public void beforeEach() {
+        this.givenInitialServerState.initialize();
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a studio, when the download of the project is requested, then the manifest is exported")
+    public void givenStudioWhenTheDownloadOfProjectIsRequestedThenTheManifestIsExported() {
+        var response = this.download(StudioIdentifiers.SAMPLE_STUDIO_PROJECT, null);
+
+        try (ZipInputStream inputStream = new ZipInputStream(response.getBody().getInputStream())) {
+            HashMap<String, ByteArrayOutputStream> zipEntries = this.toZipEntries(inputStream);
+            assertThat(zipEntries).isNotEmpty().containsKey("Studio/manifest.json");
+
+            String manifestContentExpected = """
+                    {
+                      "natures":[
+                        "siriusComponents://nature?kind=studio"
+                      ],
+                      "documentIdsToName":{
+                        "5a2ec092-0b05-410e-bdc2-0d56c0368165":"Unsynchronized Diagram View",
+                        "356e45e8-7d70-439e-b2dd-d0313cd65174":"Ellipse Diagram View",
+                        "f0e490c1-79f1-49a0-b1f2-3637f2958148":"Domain",
+                        "ed2a5355-991d-458f-87f1-ea3a18b1f104":"Form View",
+                        "fc1d7b23-2818-4874-bb30-8831ea287a44":"Diagram View"
+                      },
+                      "metamodels":[
+                        "domain://buck",
+                        "http://www.eclipse.org/emf/2002/Ecore",
+                        "http://www.eclipse.org/sirius-web/customcells",
+                        "http://www.eclipse.org/sirius-web/customnodes",
+                        "http://www.eclipse.org/sirius-web/deck",
+                        "http://www.eclipse.org/sirius-web/diagram",
+                        "http://www.eclipse.org/sirius-web/domain",
+                        "http://www.eclipse.org/sirius-web/form",
+                        "http://www.eclipse.org/sirius-web/gantt",
+                        "http://www.eclipse.org/sirius-web/table",
+                        "http://www.eclipse.org/sirius-web/tree",
+                        "http://www.eclipse.org/sirius-web/view",
+                        "https://www.eclipse.org/sirius/widgets/reference",
+                        "https://www.eclipse.org/sirius/widgets/tablewidget"
+                      ],
+                      "representations":{},
+                      "dependencies": []
+                    }
+                    """;
+
+            String manifestContent = zipEntries.get("Studio/manifest.json").toString(StandardCharsets.UTF_8);
+            var objectMapper = new ObjectMapper();
+            assertThat(objectMapper.readTree(manifestContent)).isEqualTo(objectMapper.readTree(manifestContentExpected));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a studio, when the download of the project is requested, then the semantic data are retrieved")
+    public void givenStudioWhenTheDownloadOfProjectIsRequestedThenTheSemanticDataAreRetrieved() {
+        var response = this.download(StudioIdentifiers.SAMPLE_STUDIO_PROJECT, null);
+
+        try (var inputStream = new ZipInputStream(response.getBody().getInputStream())) {
+            HashMap<String, ByteArrayOutputStream> zipEntries = this.toZipEntries(inputStream);
+            String domainDocumentPath = "Studio/documents/" + StudioIdentifiers.DOMAIN_DOCUMENT + ".json";
+            String viewDocumentPath = "Studio/documents/" + StudioIdentifiers.VIEW_DOCUMENT + ".json";
+            assertThat(zipEntries).isNotEmpty().containsKey(domainDocumentPath).containsKey(viewDocumentPath);
+
+            var objectMapper = new ObjectMapper();
+
+            String semanticDataContentExpected = this.getExpectedStudioDomainDocumentData();
+            String semanticDataContent = zipEntries.get(domainDocumentPath).toString(StandardCharsets.UTF_8);
+            assertThat(objectMapper.readTree(semanticDataContentExpected)).isEqualTo(objectMapper.readTree(semanticDataContent));
+
+            semanticDataContentExpected = this.getExpectedStudioViewDocumentData();
+            semanticDataContent = zipEntries.get(viewDocumentPath).toString(StandardCharsets.UTF_8);
+            assertThat(objectMapper.readTree(semanticDataContentExpected)).isEqualTo(objectMapper.readTree(semanticDataContent));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a Flow project with more than one editing context, when the download of the project is requested with a specific editing context id, then the correct semantic data are retrieved")
+    public void givenMultiContextFlowProjectWhenTheDownloadOfProjectIsRequestedThenTheSemanticDataAreRetrieved() {
+        // Test the main editing context
+        var response = this.download(MultiEditingContextFlowIdentifiers.PROJECT_ID, "main");
+
+        try (var inputStream = new ZipInputStream(response.getBody().getInputStream())) {
+            HashMap<String, ByteArrayOutputStream> zipEntries = this.toZipEntries(inputStream);
+            String domainDocumentPath = "MultiContextFlowProject/documents/" + MultiEditingContextFlowIdentifiers.FLOW_DOCUMENT_ID + ".json";
+            assertThat(zipEntries).isNotEmpty().containsKey(domainDocumentPath);
+
+            var objectMapper = new ObjectMapper();
+
+            String semanticDataContentExpected = this.getExpectedMultiEditingContextFlowMainDocumentContent();
+            String semanticDataContent = zipEntries.get(domainDocumentPath).toString(StandardCharsets.UTF_8);
+            assertThat(objectMapper.readTree(semanticDataContentExpected)).isEqualTo(objectMapper.readTree(semanticDataContent));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+
+        // Test on second editing context
+        var response2 = this.download(MultiEditingContextFlowIdentifiers.PROJECT_ID, "main2");
+
+        try (var inputStream = new ZipInputStream(response2.getBody().getInputStream())) {
+            HashMap<String, ByteArrayOutputStream> zipEntries = this.toZipEntries(inputStream);
+            String domainDocumentPath = "MultiContextFlowProject/documents/" + MultiEditingContextFlowIdentifiers.FLOW_DOCUMENT_ID + ".json";
+            assertThat(zipEntries).isNotEmpty().containsKey(domainDocumentPath);
+
+            domainDocumentPath = "MultiContextFlowProject/documents/" + MultiEditingContextFlowIdentifiers.ALTERNATE_DOCUMENT_ID + ".json";
+            assertThat(zipEntries).isNotEmpty().containsKey(domainDocumentPath);
+
+            var objectMapper = new ObjectMapper();
+
+            String semanticDataContentExpected = this.getExpectedMultiEditingContextFlowMain2DocumentContent();
+            String semanticDataContent = zipEntries.get(domainDocumentPath).toString(StandardCharsets.UTF_8);
+            assertThat(objectMapper.readTree(semanticDataContentExpected)).isEqualTo(objectMapper.readTree(semanticDataContent));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project, when the download of the project is requested, then the representation data are retrieved")
+    public void givenProjectWhenTheDownloadOfProjectIsRequestedThenTheRepresentationDataAreRetrieved() {
+        var response = this.download(TestIdentifiers.ECORE_SAMPLE_PROJECT, null);
+
+        try (var inputStream = new ZipInputStream(response.getBody().getInputStream())) {
+            var zipEntries = this.toZipEntries(inputStream);
+            String representationPath = "Ecore Sample/representations/" + TestIdentifiers.EPACKAGE_PORTAL_REPRESENTATION + ".json";
+            assertThat(zipEntries).isNotEmpty().containsKey(representationPath);
+
+            String representationContentExpected = this.getExpectedRepresentation();
+            String representationContent = zipEntries.get(representationPath).toString(StandardCharsets.UTF_8);
+
+            var objectMapper = new ObjectMapper();
+            assertThat(objectMapper.readTree(representationContent)).isEqualTo(objectMapper.readTree(representationContentExpected));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project with representations, when the download of the project is requested, then the manifest is exported")
+    public void givenProjectWithRepresentationsWhenTheDownloadOfProjectIsRequestedThenTheManifestIsExported() {
+        var response = this.download(TestIdentifiers.ECORE_SAMPLE_PROJECT, null);
+
+        try (ZipInputStream inputStream = new ZipInputStream(response.getBody().getInputStream())) {
+            HashMap<String, ByteArrayOutputStream> zipEntries = this.toZipEntries(inputStream);
+            assertThat(zipEntries).isNotEmpty().containsKey("Ecore Sample/manifest.json");
+
+            String manifestContentExpected = """
+                    {
+                      "natures": ["ecore"],
+                      "documentIdsToName": { "48dc942a-6b76-4133-bca5-5b29ebee133d": "Ecore" },
+                      "metamodels": ["domain://buck", "http://www.eclipse.org/emf/2002/Ecore"],
+                      "representations": {
+                        "05e44ccc-9363-443f-a816-25fc73e3e7f7": {
+                          "descriptionURI": "69030a1b-0b5f-3c1d-8399-8ca260e4a672",
+                          "type": "siriusComponents://representation?type=Portal",
+                          "targetObjectURI": "sirius:///48dc942a-6b76-4133-bca5-5b29ebee133d#3237b215-ae23-48d7-861e-f542a4b9a4b8"
+                        },
+                        "e81eec5c-42d6-491c-8bcc-9beb951356f8": {
+                          "descriptionURI": "69030a1b-0b5f-3c1d-8399-8ca260e4a672",
+                          "type": "siriusComponents://representation?type=Portal",
+                          "targetObjectURI": "sirius:///48dc942a-6b76-4133-bca5-5b29ebee133d#3237b215-ae23-48d7-861e-f542a4b9a4b8"
+                        }
+                      },
+                      "dependencies": []
+                    }
+                    """;
+
+            String manifestContent = zipEntries.get("Ecore Sample/manifest.json").toString(StandardCharsets.UTF_8);
+            var objectMapper = new ObjectMapper();
+
+            assertThat(objectMapper.readTree(manifestContent)).isEqualTo(objectMapper.readTree(manifestContentExpected));
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
+    private ResponseEntity<Resource> download(String projectId, String name) {
+        var uri = "http://localhost:" + this.port + "/api/projects/" + projectId;
+        if (name != null) {
+            uri += "?name=" + name;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(List.of(MediaType.parseMediaType("application/zip")));
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        var response = new TestRestTemplate().exchange(uri, HttpMethod.GET, entity, Resource.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        return response;
+    }
+
+    private HashMap<String, ByteArrayOutputStream> toZipEntries(ZipInputStream inputStream) {
+        HashMap<String, ByteArrayOutputStream> zipEntries = new HashMap<>();
+
+        try {
+            var zipEntry = inputStream.getNextEntry();
+            while (zipEntry != null) {
+                if (!zipEntry.isDirectory()) {
+                    String name = zipEntry.getName();
+                    ByteArrayOutputStream entryBaos = new ByteArrayOutputStream();
+                    inputStream.transferTo(entryBaos);
+                    zipEntries.put(name, entryBaos);
+                }
+                zipEntry = inputStream.getNextEntry();
+            }
+        } catch (IOException exception) {
+            fail(exception.getMessage());
+        }
+
+        return zipEntries;
+    }
+
+    private String getExpectedStudioDomainDocumentData() {
+        return """
+                    {
+                      "json":{
+                        "version":"1.0",
+                        "encoding":"utf-8"
+                      },
+                      "ns":{
+                        "domain":"http://www.eclipse.org/sirius-web/domain"
+                      },
+                      "content":[
+                        $CONTENT$
+                      ]
+                    }
+                """.replace("$CONTENT$", this.getExpectedStudioDomainDocumentDataContent());
+    }
+
+    private String getExpectedMultiEditingContextFlowMainDocumentContent() {
+        return """
+                {
+                  "json":{
+                    "version":"1.0",
+                    "encoding":"utf-8"
+                  },
+                  "ns":{
+                    "flow":"http://www.obeo.fr/dsl/designer/sample/flow"
+                  },
+                  "content":[
+                    {
+                      "id":"01791d50-5f04-4a41-9e24-7833bd081051",
+                      "eClass":"flow:System",
+                      "data":{
+                        "name":"NewSystem",
+                        "elements":[
+                          {
+                            "id":"59e2326d-768b-45f2-abfa-51fb8e4cc377",
+                            "eClass":"flow:CompositeProcessor",
+                            "data":{
+                              "name":"CompositeProcessor"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+                """;
+    }
+
+    private String getExpectedMultiEditingContextFlowMain2DocumentContent() {
+        return """
+                {
+                  "json":{
+                    "version":"1.0",
+                    "encoding":"utf-8"
+                  },
+                  "ns":{
+                    "flow":"http://www.obeo.fr/dsl/designer/sample/flow"
+                  },
+                  "content":[
+                    {
+                      "id":"01791d50-5f04-4a41-9e24-7833bd081051",
+                      "eClass":"flow:System",
+                      "data":{
+                        "name":"NewSystem2",
+                        "elements":[
+                          {
+                            "id":"59e2326d-768b-45f2-abfa-51fb8e4cc377",
+                            "eClass":"flow:CompositeProcessor",
+                            "data":{
+                              "name":"CompositeProcessor2"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+                """;
+    }
+
+    private String getExpectedStudioDomainDocumentDataContent() {
+        return """
+                {
+                  "id":"f8204cb6-3705-48a5-bee3-ad7e7d6cbdaf",
+                  "eClass":"domain:Domain",
+                  "data":{
+                    "name":"buck",
+                    "types":[
+                      {
+                        "id":"c341bf91-d315-4264-9787-c51b121a6375",
+                        "eClass":"domain:Entity",
+                        "data":{
+                          "name":"Root",
+                          "attributes":[
+                            {
+                              "id":"7ac92c9d-3cb6-4374-9774-11bb62962fe2",
+                              "eClass":"domain:Attribute",
+                              "data":{
+                                "name":"label"
+                              }
+                            },
+                           {
+                             "id":"d51d676c-0cb7-414b-8358-bacbc5d33942",
+                             "eClass":"domain:Attribute",
+                             "data":{
+                               "name":"description"
+                             }
+                           }
+                          ],
+                          "relations":[
+                            {
+                              "id":"f8fefc5d-4fee-4666-815e-94b24a95183f",
+                              "eClass":"domain:Relation",
+                              "data":{
+                                "name":"humans",
+                                "many":true,
+                                "containment":true,
+                                "targetType":"1731ffb5-bfb0-46f3-a23d-0c0650300005"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id":"c6fdba07-dea5-4a53-99c7-7eefc1bfdfcc",
+                        "eClass":"domain:Entity",
+                        "data":{
+                          "name":"NamedElement",
+                          "attributes":[
+                            {
+                              "id":"520bb7c9-5f28-40f7-bda0-b35dd593876d",
+                              "eClass":"domain:Attribute",
+                              "data":{
+                                "name":"name"
+                              }
+                            }
+                          ],
+                          "abstract":true
+                        }
+                      },
+                      {
+                        "id":"1731ffb5-bfb0-46f3-a23d-0c0650300005",
+                        "eClass":"domain:Entity",
+                        "data":{
+                          "name":"Human",
+                          "attributes":[
+                            {
+                              "id":"e86d3f45-d043-441e-b8ab-12e4b3f8915a",
+                              "eClass":"domain:Attribute",
+                              "data":{
+                                "name":"description"
+                              }
+                            },
+                            {
+                              "id":"703e6db4-a193-4da7-a872-6efba2b3a2c5",
+                              "eClass":"domain:Attribute",
+                              "data":{
+                                "name":"promoted",
+                                "type":"BOOLEAN"
+                              }
+                            },
+                            {
+                              "id":"a480dbc0-14b7-4f06-a4f7-4c86139a803a",
+                              "eClass":"domain:Attribute",
+                              "data":{
+                                "name":"birthDate"
+                              }
+                            }
+                          ],
+                          "superTypes":[
+                            "c6fdba07-dea5-4a53-99c7-7eefc1bfdfcc"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+                """;
+    }
+
+    private String getExpectedStudioViewDocumentData() {
+        return """
+                    {
+                      "json":{
+                        "version":"1.0",
+                        "encoding":"utf-8"
+                      },
+                      "ns":{
+                        "form":"http://www.eclipse.org/sirius-web/form",
+                        "table":"http://www.eclipse.org/sirius-web/table",
+                        "view":"http://www.eclipse.org/sirius-web/view"
+                      },
+                      "content":[
+                        $CONTENT$
+                      ]
+                    }
+                """.replace("$CONTENT$", this.getExpectedStudioViewDocumentDataContent());
+    }
+
+    private String getExpectedStudioViewDocumentDataContent() {
+        return """
+                {
+                  "id":"c4591605-8ea8-4e92-bb17-05c4538248f8",
+                  "eClass":"view:View",
+                  "data":{
+                    "descriptions":[
+                      {
+                        "id":"ed20cb85-a58a-47ad-bc0d-749ec8b2ea03",
+                        "eClass":"form:FormDescription",
+                        "data":{
+                          "name":"Human Form",
+                          "domainType":"buck::Human",
+                          "pages":[
+                            {
+                              "id":"b0c73654-6f1b-4be5-832d-b97f053b5196",
+                              "eClass":"form:PageDescription",
+                              "data":{
+                                "name":"Human",
+                                "labelExpression":"aql:self.name",
+                                "domainType":"buck::Human",
+                                "groups": $GROUP$
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      $TABLEDESCRIPTION$
+                    ]
+                  }
+                }
+                """.replace("$GROUP$", this.getGroups())
+                .replace("$TABLEDESCRIPTION$", this.getTableDescription());
+    }
+
+    private String getTableDescription() {
+        return """
+                {
+                 "id": "d28d9ecb-102a-4eee-9d26-55543c5acb7f",
+                 "eClass": "table:TableDescription",
+                 "data":
+                     {
+                   "name": "New Table Description",
+                   "domainType": "buck::Root",
+                   "titleExpression": "aql:New Table",
+                   "columnDescriptions": [
+                     {
+                       "id": "3db9745f-6da7-445a-b768-9d5480105eca",
+                       "eClass": "table:ColumnDescription",
+                       "data": {
+                         "name": "Column",
+                         "domainType": "buck::Root",
+                         "semanticCandidatesExpression": "aql:self",
+                         "headerLabelExpression": "aql:self.name"
+                       }
+                     }
+                   ],
+                   "rowDescription": {
+                     "id": "6c4c05cb-0e95-4556-adf5-54269fbf0843",
+                     "eClass": "table:RowDescription",
+                     "data": {
+                       "name": "Row",
+                       "semanticCandidatesExpression": "aql:self.eContents()->filter(buck::Human)->toPaginatedData(cursor,direction,size)"
+                     }
+                   },
+                    "cellDescriptions": [
+                     {
+                       "id": "5cf0f787-43dc-4b8d-b513-51296053a96e",
+                       "eClass": "table:CellDescription",
+                       "data": {
+                         "name": "Cell",
+                         "preconditionExpression": "aql:true",
+                         "valueExpression": "aql:self.name",
+                         "cellWidgetDescription": {
+                           "id": "9b3400c9-d5f0-46db-9d60-60ec4016d383",
+                           "eClass": "table:CellLabelWidgetDescription"
+                         }
+                       }
+                     }
+                   ]
+                  }
+                }
+                """;
+    }
+
+    private String getGroups() {
+        return """
+                [
+                  {
+                    "id":"28d8d6de-7d6f-4434-9293-0ac4ef2461ac",
+                    "eClass":"form:GroupDescription",
+                    "data":{
+                      "name":"Properties",
+                      "labelExpression":"Properties",
+                      "children":[
+                        $WIDGETS$
+                      ]
+                    }
+                  }
+                ]
+                """.replace("$WIDGETS$", this.getWidgets());
+    }
+
+    private String getWidgets() {
+        return """
+                {
+                  "id":"b02b89b7-6c06-40f8-9366-83d5f885ada1",
+                  "eClass":"form:TextfieldDescription",
+                  "data":{
+                    "name":"Name",
+                    "labelExpression":"Name",
+                    "helpExpression":"The name of the human",
+                    "valueExpression":"aql:self.name",
+                    "body":[
+                      {
+                        "id":"ecdc23ff-fd4b-47a4-939d-1bc03e656d3d",
+                        "eClass":"view:ChangeContext",
+                        "data":{
+                          "children":[
+                            {
+                              "id":"a8b95d5b-833a-4b19-b783-3025225613de",
+                              "eClass":"view:SetValue",
+                              "data":{
+                                "featureName":"name",
+                                "valueExpression":"aql:newValue"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id":"98e756a2-305f-4767-b75c-4130996ae6da",
+                  "eClass":"form:TextAreaDescription",
+                  "data":{
+                    "name":"Description",
+                    "labelExpression":"Description",
+                    "helpExpression":"The description of the human",
+                    "valueExpression":"aql:self.description",
+                    "body":[
+                      {
+                        "id":"59ea57d5-c365-4421-9648-f38a74644768",
+                        "eClass":"view:ChangeContext",
+                        "data":{
+                          "children":[
+                            {
+                              "id":"811bb719-ab53-49ea-9281-6558f7022ecc",
+                              "eClass":"view:SetValue",
+                              "data":{
+                                "featureName":"description",
+                                "valueExpression":"aql:newValue"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id":"ba20babb-0e75-4f66-a382-a2f02bce904a",
+                  "eClass":"form:CheckboxDescription",
+                  "data":{
+                    "name":"Promoted",
+                    "labelExpression":"Promoted",
+                    "helpExpression":"Has this human been promoted?",
+                    "valueExpression":"aql:self.promoted",
+                    "body":[
+                      {
+                        "id":"afac13bd-71ac-4287-baf6-3669f23ac806",
+                        "eClass":"view:ChangeContext",
+                        "data":{
+                          "children":[
+                            {
+                              "id":"0eaeca64-ee2b-4f2c-9454-c528181d0d64",
+                              "eClass":"view:SetValue",
+                              "data":{
+                                "featureName":"promoted",
+                                "valueExpression":"aql:newValue"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id":"91a4fcd9-a176-4df1-8f88-52a406fc3f73",
+                  "eClass":"form:DateTimeDescription",
+                  "data":{
+                    "name":"BirthDate",
+                    "labelExpression":"Birth Date",
+                    "helpExpression":"The birth date of the human",
+                    "stringValueExpression":"aql:self.birthDate",
+                    "type":"DATE"
+                  }
+                }
+                """;
+    }
+
+    private String getExpectedRepresentation() {
+        return """
+                    {
+                      "id":"e81eec5c-42d6-491c-8bcc-9beb951356f8",
+                      "projectId":"99d336a2-3049-439a-8853-b104ffb22653",
+                      "descriptionId":"69030a1b-0b5f-3c1d-8399-8ca260e4a672",
+                      "targetObjectId":"3237b215-ae23-48d7-861e-f542a4b9a4b8",
+                      "label":"EPackage Portal",
+                      "kind":"siriusComponents://representation?type=Portal",
+                      "representation":{
+                        "id":"e81eec5c-42d6-491c-8bcc-9beb951356f8",
+                        "kind":"siriusComponents://representation?type=Portal",
+                        "descriptionId":"69030a1b-0b5f-3c1d-8399-8ca260e4a672",
+                        "targetObjectId":"3237b215-ae23-48d7-861e-f542a4b9a4b8",
+                        "views":[
+                          {
+                            "id":"9e277e97-7f71-4bdd-99af-9eeb8bd7f2df",
+                            "representationId":"05e44ccc-9363-443f-a816-25fc73e3e7f7"
+                          }
+                        ],
+                        "layoutData":[
+                          {
+                            "portalViewId":"9e277e97-7f71-4bdd-99af-9eeb8bd7f2df",
+                            "x":0,
+                            "y":0,
+                            "width":500,
+                            "height":200
+                          }
+                        ]
+                      }
+                    }
+                """;
+    }
+}

@@ -1,0 +1,132 @@
+# ============================================# 前端开发模式 Docker Compose 配置# ============================================# 使用此配置可以在不重新构建 sirius-web-full 镜像的情况下测试前端更改## 使用方法:# 1. 构建前端: npm run build# 2. 启动服务: docker compose -f docker-compose.frontend-dev.yml up -d# 3. 访问: http://localhost:8080## 说明:# - nginx 服务会挂载本地的 dist 文件夹并提供前端文件
+# - 所有 API 请求会被代理到 sirius-web-full 后端服务# - 修改前端代码后，重新构建并刷新页面即可看到更改
+# ============================================
+
+name: sirius-web-frontend-dev
+
+services:
+  postgres:
+    image: docker.1ms.run/postgres:15
+    command:
+      [
+        "postgres",
+        "-c",
+        "listen_addresses=*",
+        "-c",
+        "hba_file=/etc/postgresql/pg_hba.conf",
+      ]
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpwd
+      POSTGRES_DB: sirius-web-db
+    volumes:
+      - ./deployment/docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - sirius-web-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d sirius-web-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Nginx 服务：提供前端静态文件并代理 API 请求
+  nginx:
+    image: docker.1ms.run/nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      # 挂载本地构建的前端文件
+      - ./packages/sirius-web/frontend/sirius-web/dist:/usr/share/nginx/html:ro
+      # Nginx 配置文件
+      - ./deployment/docker/nginx/frontend-dev.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - sirius-web-full
+    restart: unless-stopped
+
+  # 后端服务（使用简化配置，仅供 API 使用）
+  sirius-web-full:
+    image: sirius-web-sirius-web-full:${SIRIUS_WEB_FULL_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.all
+      args:
+        USERNAME: ${GITHUB_USERNAME:-}
+        PASSWORD: ${GITHUB_TOKEN:-}
+        GITHUB_TOKEN: ${GITHUB_TOKEN:?GITHUB_TOKEN is not set}
+      additional_contexts:
+        - m2-context=${M2_CONTEXT_PATH:-/tmp/m2}
+    platform: ${DOCKER_PLATFORM:-linux/amd64}
+    ports:
+      - "8081:8080"  # 内部端口 8081，外部通过 nginx 访问
+    volumes:
+      - ecoa-workspace:/workspace
+    environment:
+      SPRING_PROFILES_ACTIVE: "docker"
+      SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS: "*"
+      SIRIUS_WEB_ENABLED: "*"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/sirius-web-db"
+      SPRING_DATASOURCE_USERNAME: "dbuser"
+      SPRING_DATASOURCE_PASSWORD: "dbpwd"
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
+      ECOA_PYTHON_GENERATOR_URL: "http://ecoa-tools:5000"
+      ECOA_WORKSPACE_DIR: "/workspace"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ecoa-tools:
+        condition: service_started
+    restart: unless-stopped
+
+  ecoa-tools:
+    image: sirius-web-ecoa-tools:${ECOA_TOOLS_TAG:-latest}
+    build:
+      context: ./ecoa-tools
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ecoa-workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      SIRIUS_WEB_URL: "http://sirius-web-full:8080"
+      ECOA_WORKSPACE: "/workspace"
+      ECOA_DISTRIBUTED_DEBUG_CLIENT_CONTAINER: "code-server"
+      DOCKER_HOST: "${ECOA_TOOLS_DOCKER_HOST:-unix:///var/run/docker.sock}"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  code-server:
+    image: sirius-web-code-server:${CODE_SERVER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.code-server
+      args:
+        ECOA_TOOLS_BASE: sirius-web-ecoa-tools:${ECOA_TOOLS_TAG:-latest}
+    container_name: code-server
+    environment:
+      TZ: Asia/Shanghai
+      PASSWORD: password
+      VIRTUAL_ENV: /app/.venv
+      PATH: /app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      ECOA_WORKSPACE: "/workspace"
+    volumes:
+      - code-server-config:/root/.local/share/code-server
+      - ecoa-workspace:/workspace
+    ports:
+      - "8443:8080"
+    depends_on:
+      - ecoa-tools
+    restart: unless-stopped
+
+volumes:
+  sirius-web-data:
+  ecoa-workspace:
+  code-server-config:

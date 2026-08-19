@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecoa:logicalSystem id="cs1"
+  xmlns:ecoa="http://www.ecoa.technology/logicalsystem-2.0">
+
+  <!-- Platform 1: runs demoPing -->
+  <logicalComputingPlatform id="Platform_Ping" ELIPlatformId="1">
+    <logicalComputingNode id="machine_ping">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="8"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+  <!-- Platform 2: runs demoPong -->
+  <logicalComputingPlatform id="Platform_Pong" ELIPlatformId="2">
+    <logicalComputingNode id="machine_pong">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="8"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+  <!-- Cross-platform link with TCP transport binding -->
+  <logicalComputingPlatformLinks>
+    <link id="link_Ping_to_Pong" from="Platform_Ping" to="Platform_Pong">
+      <throughput megaBytesPerSecond="1000"/>
+      <latency microSeconds="100"/>
+      <transportBinding protocol="TCP" parameters="tcp-params.xml"/>
+    </link>
+  </logicalComputingPlatformLinks>
+
+</ecoa:logicalSystem>

@@ -1,0 +1,31 @@
+/*******************************************************************************
+ * Copyright (c) 2023, 2025 Obeo and others.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+import { TreeFilter } from '../views/TreeFiltersMenu.types';
+import { TreeToolBarContributionComponentProps } from './TreeToolBarContribution.types';
+
+export interface TreeToolBarProps {
+  editingContextId: string;
+  treeFilters: TreeFilter[];
+  onRevealSelection: () => void;
+  onTreeFilterMenuItemClick: (filters: TreeFilter[]) => void;
+  onFilter: () => void;
+  treeToolBarContributionComponents: ((props: TreeToolBarContributionComponentProps) => JSX.Element)[];
+  readOnly: boolean;
+  children: React.ReactNode;
+}
+
+export interface TreeToolBarState {
+  modalOpen: Modal | null;
+}
+
+type Modal = 'NewDocument' | 'UploadDocument';

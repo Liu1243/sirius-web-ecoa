@@ -1,0 +1,78 @@
+# Dockerfile.code-server.dockerignore
+# 专用于 Dockerfile.code-server 的 build context 过滤规则。
+# code-server 镜像以 ecoa-tools 为基础镜像，自身只需要：
+#   - code-server_*.deb（deb 安装包）
+#   - vs-extension/（VS Code 插件）
+# 其余所有内容均可排除，显著缩小 build context 传输量。
+
+# ── 依赖 / 构建产物 ──────────────────────────────────────────────
+node_modules/
+**/node_modules/
+**/target/
+**/dist/
+**/build/
+
+# ── IDE / 版本控制 ───────────────────────────────────────────────
+.idea/
+.vscode/
+.cursor/
+*.iml
+.git/
+.gitignore
+.gitattributes
+
+# ── 文档 ─────────────────────────────────────────────────────────
+doc/
+docs/
+*.adoc
+*.md
+CHANGELOG*
+CONTRIBUTING
+DEPENDENCIES
+LICENSE
+NOTICE
+
+# ── 测试 ─────────────────────────────────────────────────────────
+integration-tests-cypress/
+integration-tests-playwright/
+test-results/
+playwright-report/
+
+# ── 临时文件 ─────────────────────────────────────────────────────
+*.log
+compile.log
+.turbo/
+
+# ── Docker 编排文件 ───────────────────────────────────────────────
+docker-compose*.yml
+Dockerfile.*
+
+# ── Java/前端源码（438 MB）──────────────────────────────────────
+# code-server 继承自已构建的 ecoa-tools 基础镜像，不需要任何源码
+packages/
+
+# ── ECOA Tools Python 服务（48 MB）─────────────────────────────
+# 由 ecoa-tools 基础镜像提供，不需要再 COPY
+ecoa-tools/
+
+# ── 运行时数据目录 ───────────────────────────────────────────────
+workspace/
+
+# ── Maven 本地仓库缓存 ───────────────────────────────────────────
+.m2/
+
+# ── 其他无关目录 ─────────────────────────────────────────────────
+examples/
+scripts/
+deployment/
+diagram-image-server/
+vscode-extension/
+edt-tmp/
+
+# ── npm 根配置（code-server 不需要 npm 安装）────────────────────
+package.json
+package-lock.json
+turbo.json
+.npmrc
+settings.xml
+

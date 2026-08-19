@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DDS Binding configuration schema for ECOA LDP.
+  Referenced by cs1.logical-system.xml:
+    <transportBinding protocol="DDS" parameters="dds-binding.xml"/>
+
+  This file is the DDS counterpart to ecoa-udpbinding-2.0.xsd.
+  ECOA does not define a standard DDS binding schema; this schema is
+  an implementation-defined extension that follows the same conventions.
+-->
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://www.ecoa.technology/ddsbinding"
+  targetNamespace="http://www.ecoa.technology/ddsbinding"
+  elementFormDefault="qualified">
+
+  <xsd:element name="DDSBinding">
+    <xsd:complexType>
+      <xsd:sequence>
+
+        <!--
+          DDS Domain ID.  Matching domain IDs are required on every platform
+          that participates in the same ELI exchange.
+          Valid range: 0–232 (CycloneDDS / OMG DDS specification).
+        -->
+        <xsd:element name="domain" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="id" type="DomainID" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+
+        <!--
+          DDS Topic name used for ELI packet exchange.
+          Optional: defaults to "LdpLocalPeerData" when omitted.
+          All platforms in the same logical system must use the same topic name.
+        -->
+        <xsd:element name="topic" minOccurs="0" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    DomainID: 0–232 per the OMG DDS specification.
+    CycloneDDS reserves 233–255 for internal use.
+  -->
+  <xsd:simpleType name="DomainID">
+    <xsd:restriction base="xsd:unsignedInt">
+      <xsd:minInclusive value="0"/>
+      <xsd:maxInclusive value="232"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

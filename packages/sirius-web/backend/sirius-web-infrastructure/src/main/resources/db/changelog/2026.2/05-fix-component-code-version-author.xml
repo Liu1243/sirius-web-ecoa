@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+    <changeSet id="05-fix-component-code-version-author" author="obeo">
+        <!--
+            Back-fill: versions created before this fix store the user's UUID as the author field.
+            Replace any author value that matches an app_user.id with the corresponding username.
+        -->
+        <sql>
+            UPDATE component_code_version
+            SET author = u.username
+            FROM app_user u
+            WHERE component_code_version.author = u.id::text
+        </sql>
+    </changeSet>
+</databaseChangeLog>

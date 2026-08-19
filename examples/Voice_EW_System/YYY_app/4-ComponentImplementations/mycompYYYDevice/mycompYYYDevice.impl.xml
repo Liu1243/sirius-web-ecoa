@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<componentImplementation xmlns="http://www.ecoa.technology/implementation-2.0" componentDefinition="YYYDevice">
+  <use library="Common_lib"/>
+
+  <moduleType name="myYYYDevice_mod_t">
+    <operations>
+      <!-- 功能(1): 发布的版本化数据 struct2 -->
+      <dataWritten name="versioned_data_out" type="Common_lib:versioned_data"/>
+      <!-- 功能(2): 订阅的事件数据 struct1, notifying=true 表示数据更新时激活模块, 据此改变设备自身状态 -->
+      <dataRead name="event_data_in" type="Common_lib:event_data" notifying="true"/>
+      <!-- 5s 周期发布触发 -->
+      <eventReceived name="trigger_publish"/>
+    </operations>
+  </moduleType>
+
+  <moduleImplementation language="C" moduleType="myYYYDevice_mod_t" name="myYYYDevice_mod"/>
+  <moduleInstance name="myYYYDevice_mod_inst" relativePriority="100" implementationName="myYYYDevice_mod"/>
+  <triggerInstance name="publish_timer" relativePriority="0"/>
+
+  <!-- 周期 5s 触发版本化数据发布 -->
+  <eventLink>
+    <senders>
+      <trigger instanceName="publish_timer" period="5"/>
+    </senders>
+    <receivers>
+      <moduleInstance instanceName="myYYYDevice_mod_inst" operationName="trigger_publish"/>
+    </receivers>
+  </eventLink>
+
+  <!-- 版本化数据 struct2: 模块 -> 服务(经中间件发往电子自卫应用) -->
+  <dataLink>
+    <writers>
+      <moduleInstance instanceName="myYYYDevice_mod_inst" operationName="versioned_data_out"/>
+    </writers>
+    <readers>
+      <service instanceName="svc_versioned_data" operationName="versioned_data"/>
+    </readers>
+  </dataLink>
+
+  <!-- 事件数据 struct1: 引用(来自中间件) -> 模块 -->
+  <dataLink>
+    <writers>
+      <reference instanceName="svc_event_data" operationName="event_data"/>
+    </writers>
+    <readers>
+      <moduleInstance instanceName="myYYYDevice_mod_inst" operationName="event_data_in"/>
+    </readers>
+  </dataLink>
+
+</componentImplementation>
+

@@ -1,0 +1,48 @@
+{
+  "name": "@eclipse-sirius/sirius-components-charts",
+  "version": "2025.12.5",
+  "author": "Eclipse Sirius",
+  "license": "EPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse-sirius/sirius-web"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "main": "./dist/sirius-components-charts.umd.js",
+  "module": "./dist/sirius-components-charts.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/sirius-components-charts.umd.js",
+      "import": "./dist/sirius-components-charts.es.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite build --watch --mode development",
+    "build-dev": "vite build --mode 'development' && tsc",
+    "build": "vite build && tsc",
+    "format": "prettier --write \"src/**/*.{js,ts,tsx,css}\"",
+    "format-lint": "prettier --list-different \"src/**/*.{js,ts,tsx,css}\"",
+    "publish:local": "yalc push"
+  },
+  "peerDependencies": {
+    "d3": "7.0.0",
+    "react": "18.3.1"
+  },
+  "devDependencies": {
+    "@eclipse-sirius/sirius-components-tsconfig": "*",
+    "@types/react": "18.3.3",
+    "@vitejs/plugin-react": "5.0.0",
+    "d3": "7.0.0",
+    "prettier": "2.7.1",
+    "react": "18.3.1",
+    "rollup-plugin-peer-deps-external": "2.2.4",
+    "typescript": "5.4.5"
+  }
+}

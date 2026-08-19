@@ -1,0 +1,19 @@
+{
+  "name": "@eclipse-sirius/sirius-components-tsconfig",
+  "version": "2025.12.5",
+  "author": "Eclipse Sirius",
+  "license": "EPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse-sirius/sirius-web"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "main": "index.js",
+  "files": [
+    "base.json",
+    "react-library.json",
+    "strict-react-library.json"
+  ]
+}

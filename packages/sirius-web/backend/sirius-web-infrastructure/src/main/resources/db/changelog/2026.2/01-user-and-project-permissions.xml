@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="2026.2.01-user-and-project-permissions" author="codex">
+        <createTable tableName="app_user">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="username" type="TEXT">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_app_user_username"/>
+            </column>
+            <column name="display_name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password_hash" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_admin" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_on" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+            ALTER TABLE app_user ADD CONSTRAINT app_user_username_length CHECK (char_length(username) &gt; 0 AND char_length(username) &lt;= 255)
+        </sql>
+        <sql>
+            ALTER TABLE app_user ADD CONSTRAINT app_user_display_name_length CHECK (char_length(display_name) &gt; 0 AND char_length(display_name) &lt;= 255)
+        </sql>
+
+        <createTable tableName="project_membership">
+            <column name="project_id" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_on" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="project_membership" columnNames="project_id,user_id" constraintName="pk_project_membership"/>
+        <addForeignKeyConstraint baseTableName="project_membership" baseColumnNames="project_id" constraintName="fk_project_membership_project_id" referencedTableName="project" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="project_membership" baseColumnNames="user_id" constraintName="fk_project_membership_user_id" referencedTableName="app_user" referencedColumnNames="id" onDelete="CASCADE"/>
+        <sql>
+            ALTER TABLE project_membership ADD CONSTRAINT project_membership_role_check CHECK (role IN ('ACCESS'))
+        </sql>
+
+        <createIndex tableName="project_membership" indexName="idx_project_membership_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="project_membership" indexName="idx_project_membership_project_id_role">
+            <column name="project_id"/>
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

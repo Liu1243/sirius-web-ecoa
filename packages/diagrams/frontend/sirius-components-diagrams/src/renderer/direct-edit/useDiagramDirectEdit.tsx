@@ -1,0 +1,85 @@
+/*******************************************************************************
+ * Copyright (c) 2023, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+import { Edge, Node, useReactFlow } from '@xyflow/react';
+import { useCallback, useContext } from 'react';
+import { DiagramContext } from '../../contexts/DiagramContext';
+import { DiagramContextValue } from '../../contexts/DiagramContext.types';
+import { EdgeData, NodeData } from '../DiagramRenderer.types';
+import { DiagramDirectEditContext } from './DiagramDirectEditContext';
+import { DiagramDirectEditContextValue } from './DiagramDirectEditContext.types';
+import { UseDiagramDirectEditValue } from './useDiagramDirectEdit.types';
+
+const directEditActivationValidCharacters = /[\p{L}\p{N}\p{P}\p{S}\p{M}]/u;
+
+export const useDiagramDirectEdit = (): UseDiagramDirectEditValue => {
+  const { currentlyEditedLabelId, editingKey, setCurrentlyEditedLabelId, resetDirectEdit } =
+    useContext<DiagramDirectEditContextValue>(DiagramDirectEditContext);
+  const { getNodes, getEdges } = useReactFlow<Node<NodeData>, Edge<EdgeData>>();
+  const { readOnly } = useContext<DiagramContextValue>(DiagramContext);
+
+  const onDirectEdit = useCallback(
+    (event: React.KeyboardEvent<Element>) => {
+      const { key } = event;
+
+      const isTextField = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+
+      /*If a modifier key is hit alone, do nothing*/
+      if ((event.altKey && key === 'Alt') || (event.shiftKey && key === 'Shift') || readOnly) {
+        return;
+      }
+
+      /*Allow direct edit with F2 on textfields but not by typing*/
+      if (key !== 'F2' && isTextField) {
+        return;
+      }
+      event.preventDefault();
+
+      const validFirstInputChar =
+        !event.metaKey && !event.ctrlKey && key.length === 1 && directEditActivationValidCharacters.test(key);
+
+      let currentlyEditedLabelId: string | undefined | null;
+      let isLabelEditable: boolean = false;
+      const nodeData: NodeData | undefined = getNodes().find((node) => node.selected)?.data;
+
+      if (nodeData) {
+        if (nodeData.insideLabel) {
+          currentlyEditedLabelId = nodeData.insideLabel.id;
+        } else if (nodeData.outsideLabels.BOTTOM_MIDDLE) {
+          currentlyEditedLabelId = nodeData.outsideLabels.BOTTOM_MIDDLE.id;
+        }
+        isLabelEditable = nodeData.labelEditable;
+      }
+
+      if (!currentlyEditedLabelId) {
+        currentlyEditedLabelId = getEdges().find((edge) => edge.selected)?.data?.label?.id;
+        isLabelEditable = getEdges().find((edge) => edge.selected)?.data?.centerLabelEditable || false;
+      }
+      if (currentlyEditedLabelId && isLabelEditable) {
+        if (validFirstInputChar) {
+          setCurrentlyEditedLabelId('keyDown', currentlyEditedLabelId, key);
+        } else if (key === 'F2') {
+          setCurrentlyEditedLabelId('F2', currentlyEditedLabelId, null);
+        }
+      }
+    },
+    [setCurrentlyEditedLabelId]
+  );
+
+  return {
+    currentlyEditedLabelId,
+    editingKey,
+    setCurrentlyEditedLabelId,
+    resetDirectEdit,
+    onDirectEdit,
+  };
+};

@@ -1,0 +1,10 @@
+{
+  "validationView": {
+    "diagnosticCount": "{{count}} diagnostic",
+    "diagnosticCount_one": "{{count}} diagnostic",
+    "diagnosticCount_other": "{{count}} diagnostics",
+    "noDiagnostic": "No diagnostic available",
+    "requiredFeature": "The required feature '{{feature}}' of '{{object}}' must be set",
+    "featureMinValues": "The feature '{{feature}}' of '{{object}}' with {{current}} values must have at least {{min}} values"
+  }
+}

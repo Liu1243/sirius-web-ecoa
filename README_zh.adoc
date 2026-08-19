@@ -1,0 +1,388 @@
+= Sirius Web
+
+https://www.eclipse.dev/sirius/sirius-web.html[Eclipse Sirius Web] 是一个框架，用于轻松创建和部署网络工作室。
+我们保持了 https://www.eclipse.dev/sirius[Eclipse Sirius Desktop] 取得成功的原则，并将其应用到现代基于云的堆栈中。
+
+image::doc/images/ProjectEditor.png[Sirius Web]
+
+此仓库包含构建 Sirius Web 应用程序的构建块。
+`packages` 文件夹包含用于构建相应后端的 Spring Boot 项目和用于构建应用程序 UI 的可重用 React 组件。
+它还包含 Sirius Web 示例应用程序。
+
+要测试 _Sirius Web_，您有两个可能的选项：
+
+. 如果您只想运行示例应用程序的已构建版本，请遵循 link:#quick-start[快速开始]。
+. 如果您想_构建_示例应用程序，请遵循 link:#build[完整的构建说明]。
+
+[#quick-start]
+== 快速开始
+
+如果您想快速了解 Sirius Web 的外观和感觉，而无需自己构建示例应用程序：
+
+1. 安装 https://www.docker.com/[Docker]（如果还没有安装）。
+2. 从 Sirius Web git 仓库根目录下载 https://raw.githubusercontent.com/eclipse-sirius/sirius-web/refs/heads/master/docker-compose.yml[`docker-compose.yml`] 文件。
+3. 在放置 `docker-compose.yml` 文件的目录中打开终端，并执行 `docker compose up`。
+
+Docker 将自动下载并启动数据库（PostgreSQL）镜像以及 https://hub.docker.com/r/eclipsesirius/sirius-web[Docker Hub] 上发布的最新版本 Sirius Web。
+
+WARNING: 第一次运行时这可能需要一段时间，因为 Docker 需要先拉取所需的 Docker 镜像。
+
+应用程序启动后，只需将浏览器指向 http://localhost:8080 即可享受！
+
+完成后，您可以通过在启动 `docker compose up` 的终端中按 Ctrl-c 来停止应用程序。
+
+NOTE: 这种运行应用程序的方式仅适用于快速测试，不应用于实际部署。
+
+[#build]
+== 构建
+
+=== 要求
+
+要在您自己的机器上构建此仓库中的组件，您需要安装以下工具：
+
+* Git 和 GitHub 账户
+* 要构建后端组件：
+** https://adoptium.net/temurin/releases/[Java 17]
+** https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/[Apache Maven 3.6.3]
+** https://www.docker.com/[Docker] 必须安装并运行，因为某些后端组件测试需要运行。
+* 要构建前端组件：
+** LTS 版本的 https://nodejs.org/[Node 和 NPM]：特别是，需要 Node >= 22.16.0 和 npm >= 10.9.2。
+** https://turbo.build[TurboRepo]（`npm install -g turbo`）
+
+WARNING: 请注意，在 Windows Subsystem for Linux (WSL) 下使用 NPM 时存在问题。
+如果您使用 WSL 并遇到类似 _"Maximum call stack size exceeded"_ 的错误消息，请切换到普通的 Windows，在那里应该可以正常工作。
+
+对于 Windows 用户：由于 Windows 的最大路径长度限制，您可能会超过 PATH 中 260 个字符的限制。要移除此限制，请应用 https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell[此过程]，使用 PowerShell 中的此命令行（`New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force`），然后在管理员权限的命令行中激活 Git 的 longpath 选项（`git config --system core.longpaths true`）。
+
+=== GitHub 访问令牌
+
+此仓库的后端组件依赖于 https://github.com/eclipse-sirius/sirius-emf-json[`sirius-emf-json`]，它作为 Maven 工件发布在 _GitHub Packages_ 中。
+此仓库的前端组件依赖于 https://github.com/ObeoNetwork/react-trello[`@ObeoNetwork/react-trello`] 和 https://github.com/ObeoNetwork/gantt-task-react[`@ObeoNetwork/gantt-task-react`]，它们作为 Node 工件发布在 _GitHub Packages_ 中。
+要在本地构建 `sirius-web`，您需要一个 _GitHub 访问令牌_，以便：
+* Maven 可以下载 `sirius-emf-json` 和 `Flow-Designer` 工件。
+* Node 可以下载 `@ObeoNetwork/react-trello` 和 `@ObeoNetwork/gantt-task-react` 工件。
+
+. 如果您还没有，请按照 https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token[GitHub 文档] 创建一个具有 `read:package` 范围的个人令牌。
++
+WARNING: 生成后，令牌无法再次显示，因此请确保将其复制到安全位置。
+. 创建或编辑 `$HOME/.m2/settings.xml` 以告诉 Maven 在访问 Sirius EMF JSON 仓库时使用此令牌：
++
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>github-sirius-emfjson</id>
+      <username>$GITHUB_USERNAME</username>
+      <password>$GITHUB_ACCESS_TOKEN</password>
+    </server>
+    <server>
+      <id>github-flow</id>
+      <username>$GITHUB_USERNAME</username>
+      <password>$GITHUB_ACCESS_TOKEN</password>
+    </server>
+  </servers>
+</settings>
+----
++
+请务必将 `$GITHUB_USERNAME` 替换为您的 GitHub 用户 ID，并将 `$GITHUB_ACCESS_TOKEN` 替换为您的访问令牌的值。
++
+IMPORTANT: 您的 `settings.xml` 中使用的 `id` *必须* 是 `github-sirius-emfjson` 和 `github-flow` 以匹配 POM 中使用的 ID。
+
+. 创建或编辑 `$HOME/.npmrc` 以告诉 Node 在访问 GitHub Node 工件仓库时使用此令牌：
++
+[source,sh]
+----
+//npm.pkg.github.com/:_authToken=$GITHUB_ACCESS_TOKEN
+----
++
+请务必将 `$GITHUB_ACCESS_TOKEN` 替换为您的访问令牌的值。
+
+
+=== 构建前端和后端组件以及 Sirius Web
+
+1. 克隆此仓库
+2. 构建前端包：
++
+[source,sh]
+----
+npm ci
+npx turbo run build
+----
++
+
+NOTE: 要运行测试，请使用 `npx turbo run coverage`
+启动：npx turbo run start
++
+
+[WARNING]
+====
+要构建包 `@eclipse-sirius/sirius-components-diagrams`，需要 `mkdir` 命令。
+
+对于 Windows 用户，根据 https://docs.npmjs.com/cli/v8/using-npm/config#script-shell[npm 文档]，Windows 上 script-shell 配置的默认值是 `cmd.exe`，它不支持 `mkdir` 命令。我们建议使用 https://git-scm.com/downloads[git bash] 而不是默认命令工具。
+
+然后，您可以使用以下命令设置 `script-shell` 配置：
+[source,sh]
+----
+npm config set script-shell "C:\Program Files\Git\bin\bash.exe"
+----
+====
+
+3. 将前端工件安装为后端服务的静态资源。
+从仓库根目录：
++
+[source,sh]
+----
+mkdir -p packages/sirius-web/backend/sirius-web-frontend/src/main/resources/static
+cp -R packages/sirius-web/frontend/sirius-web/dist/* packages/sirius-web/backend/sirius-web-frontend/src/main/resources/static
+----
+
+4. 构建后端组件。
++
+[source,sh]
+----
+mvn clean install -f packages/pom.xml
+----
++
+TIP: 如果您在代理后面，您可能会收到关于 checkstyle.org 不可用的 Maven 错误。
+在这种情况下，您需要从构建中显式禁用 CheckStyle：`mvn clean install -f releng/org.eclipse.sirius.emfjson.releng/pom.xml -P\!checkstyle`
++
+NOTE: https://www.docker.com/[Docker] 必须安装并运行，因为某些后端组件测试需要运行。
+如果 Docker 不存在，您仍然可以通过跳过测试执行来构建后端：`mvn clean install -f packages/pom.xml -DskipTests`。
+
+5. 您可以在后端组件的各种 `target` 文件夹和前端组件的 `dist` 文件夹中找到输出工件。
+您可以将这些发布到您的 maven 或 npm 仓库以在其他应用程序中使用。
+我们已经在我们 GitHub 组织的 NPM 和 maven 仓库中发布这些组件。
++
+使用这些说明，我们可以在 `packages/sirius-web/backend/sirius-web/target/sirius-web-{YEAR.MONTH.COUNT-SNAPSHOT}.jar` 中找到一个 Spring Boot "fat JAR"。
+请参考上面的"快速开始"部分中的说明来启动它。
+
+====
+
+[#docker]
+== Docker 部署
+
+=== 架构概览
+
+通过 `docker-compose.yml` 启动三个服务：
+
+[cols="1,1,3",options="header"]
+|===
+| 服务名 | 端口 | 说明
+
+| `sirius-web-full`
+| `8080`
+| 主应用（Spring Boot + 内置 PostgreSQL + 前端静态资源），由 `Dockerfile.all` 三阶段构建：① Node 构建前端 dist → ② Maven 将前端静态资源打入后端 fat JAR → ③ postgres:15 运行时（supervisord 同时管理 Postgres + Spring Boot）
+
+| `ecoa-tools`
+| `5000`
+| Python/Flask ECOA 代码生成服务，由 `ecoa-tools/Dockerfile` 构建
+
+| `code-server`
+| `8443`
+| 基于浏览器的 VS Code IDE（root 权限），挂载与前两个服务共享的 `ecoa-workspace` 命名卷
+|===
+
+三个服务通过 `ecoa-workspace` Docker 命名卷共享 `/workspace` 目录，code-server 可直接查看和编辑 ecoa 生成的文件。
+
+=== Dockerfile 文件说明
+
+[cols="1,1,2",options="header"]
+|===
+| 文件 | 状态 | 说明
+
+| `Dockerfile.all`
+| ✅ 主要使用
+| 三阶段全量构建，`docker-compose.yml` 的主 Dockerfile
+
+| `Dockerfile.backend`
+| ✅ 备用
+| 仅构建后端 JAR，不含 Postgres，配合外部数据库使用
+
+| `Dockerfile.frontend`
+| ⚠️ 已废弃
+| Nginx 独立托管前端（前后端分离场景）。前端已打包进 `Dockerfile.all`，不再使用
+|===
+
+=== 一键构建并启动
+
+[source,sh]
+.Linux / macOS (Bash)
+----
+export GITHUB_USERNAME="your_github_username"
+export GITHUB_TOKEN="your_github_token"
+
+docker compose up --build -d
+----
+
+[source,powershell]
+.Windows (PowerShell)
+----
+$env:GITHUB_USERNAME="your_github_username"
+$env:GITHUB_TOKEN="REDACTED_TOKEN"
+
+docker compose up --build -d
+----
+
+=== 仅构建主镜像（不使用 compose）
+
+[source,sh]
+.Linux / macOS (Bash)
+----
+docker build -f Dockerfile.all \
+  --build-arg USERNAME=$GITHUB_USERNAME \
+  --build-arg PASSWORD=$GITHUB_TOKEN \
+  --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+  -t sirius-web-all:latest .
+----
+
+[source,powershell]
+.Windows (PowerShell)
+----
+docker build -f Dockerfile.all `
+  --build-arg USERNAME=$env:GITHUB_USERNAME `
+  --build-arg PASSWORD=$env:GITHUB_TOKEN `
+  --build-arg GITHUB_TOKEN=$env:GITHUB_TOKEN `
+  -t sirius-web-all:latest .
+----
+
+
+=== 离线编译 / 网络受限构建 (手动下载包)
+
+如果您在构建 `code-server` 镜像时遇到网络超时，可以采取手动下载包的方式：
+
+1.  **手动下载**: 在浏览器中打开 https://github.com/coder/code-server/releases/download/v4.96.2/code-server_4.96.2_amd64.deb[code-server_4.96.2_amd64.deb] 并下载。
+2.  **放置文件**: 将下载好的 `.deb` 文件存放在项目根目录下（与 `docker-compose.yml` 同级）。
+3.  **开始构建**: 运行 `docker compose up --build -d`。`Dockerfile.code-server` 已配置为优先使用本地文件。
+
+=== 镜像导出 / 导入（离线部署）
+
+[source,sh]
+----
+# 导出
+# 注意：镜像名称取决于构建时的项目名前缀（默认为 sirius-web）
+docker save -o sirius-web-full.tar sirius-web-sirius-web-full:latest
+docker save -o ecoa-tools.tar sirius-web-ecoa-tools:latest
+docker save -o code-server.tar sirius-web-code-server:latest
+
+# 加载
+docker load -i sirius-web-full.tar
+docker load -i ecoa-tools.tar
+docker load -i code-server.tar
+
+# 启动（不重新构建）
+docker compose up -d
+----
+
+=== 一键全量打包 (导出为 ZIP)
+
+如果您需要将整个运行环境（包含所有镜像和配置文件）打包为一个 ZIP 文件以便离线分发：
+
+[source,sh]
+.Linux / macOS
+----
+# 1. 将所有相关镜像保存到一个 tar 包中
+docker save -o sirius-web-offline.tar \
+  sirius-web-sirius-web-full:latest \
+  sirius-web-ecoa-tools:latest \
+  sirius-web-code-server:latest
+
+# 2. 将 tar 包和 docker-compose.yml 压缩为 zip
+zip sirius-web-package.zip sirius-web-offline.tar docker-compose.yml
+----
+
+[source,powershell]
+.Windows (PowerShell)
+----
+# 1. 保存所有镜像
+docker save -o sirius-web-offline.tar `
+  sirius-web-sirius-web-full:latest `
+  sirius-web-ecoa-tools:latest `
+  sirius-web-code-server:latest
+
+# 2. 压缩为 zip
+Compress-Archive -Path sirius-web-offline.tar, docker-compose.yml -DestinationPath sirius-web-package.zip
+----
+
+
+=== 访问地址
+
+* *主应用*：http://localhost:8080
+* *ECOA Tools API*：http://localhost:5000
+* *Code Server（Web IDE）*：http://localhost:8443（密码：见 `docker-compose.yml` 中 `PASSWORD` 变量）
+
+=== 开发环境独立 Postgres（可选）
+
+如使用外部数据库而非 `Dockerfile.all` 内置的 Postgres：
+
+[source,sh]
+----
+docker run -d --restart=always --name sirius-web-pg \
+  -p 54320:5432 \
+  -e POSTGRES_USER=dbuser \
+  -e POSTGRES_PASSWORD=dbpwd \
+  -e POSTGRES_DB=sirius-web-db \
+  docker.m.daocloud.io/library/postgres:15
+----
+
+=== 停止服务
+
+[source,sh]
+----
+# 停止但保留数据卷
+docker compose down
+
+# 停止并清除所有数据卷（⚠️ 会删除数据库数据和 workspace 文件）
+docker compose down -v
+----
+
+
+code server配置
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ECOA: gdb Launch (启动调试)",
+            "type": "cppdbg",
+            "request": "launch",
+            // 【重要】替换为你实际 make 出来的可执行文件路径
+            // 例如: "${workspaceFolder}/6-output/build/Step0" 
+            "program": "${workspaceFolder}/6-output/build/YOUR_EXECUTABLE_NAME", 
+            "args": [], // 如果启动程序需要传参数，可以写在这里
+            "stopAtEntry": true, // 是否在 main 函数入口处自动暂停
+            "cwd": "${workspaceFolder}", // 运行时的当前工作目录
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "ECOA: gdb Attach (附加到已运行进程)",
+            "type": "cppdbg",
+            "request": "attach",
+            // 依然需要指定对应的可执行文件，以便 gdb 加载符号表
+            "program": "${workspaceFolder}/6-output/build/YOUR_EXECUTABLE_NAME", 
+            "processId": "${command:pickProcess}", // 调试启动时会自动弹窗让你复选当前运行的进程
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
+
+REDACTED_TOKEN

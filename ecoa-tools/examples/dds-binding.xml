@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DDS transport binding configuration.
+  Schema: http://www.ecoa.technology/ddsbinding (schemas/ecoa-ddsbinding.xsd)
+  Referenced by cs1.logical-system.xml:
+
+    <logicalComputingPlatformLinks>
+      <link id="link_A_to_B" from="Platform_A" to="Platform_B">
+        <throughput megaBytesPerSecond="1000"/>
+        <latency microSeconds="50"/>
+        <transportBinding protocol="DDS" parameters="dds-binding.xml"/>
+      </link>
+    </logicalComputingPlatformLinks>
+
+  All platforms participating in this link must be built with:
+    -DCMAKE_USE_DDS_PROTO=ON -DCYCLONEDDS_DOMAIN_ID=<id>
+-->
+<DDSBinding xmlns="http://www.ecoa.technology/ddsbinding">
+
+  <!--
+    DDS Domain ID: all platforms exchanging ELI messages must join the same domain.
+    Valid range: 0–232.
+    Default (when omitted): 0 (DDS_DOMAIN_DEFAULT).
+  -->
+  <domain id="0"/>
+
+  <!--
+    DDS Topic name used for ELI packet exchange.
+    Optional — defaults to "LdpLocalPeerData" when this element is absent.
+    All platforms in the logical system must use the same topic name.
+  -->
+  <!-- <topic name="LdpLocalPeerData"/> -->
+
+</DDSBinding>

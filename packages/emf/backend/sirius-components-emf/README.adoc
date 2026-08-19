@@ -1,0 +1,9 @@
+= sirius-components-emf
+
+== Goal
+
+This project provides support for EMF.
+
+== Dependencies
+
+- Eclipse EMF

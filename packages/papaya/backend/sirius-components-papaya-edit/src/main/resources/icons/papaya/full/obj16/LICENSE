@@ -1,0 +1,54 @@
+- https://github.com/yamatsum/nonicons (MIT LICENSE)
+  - Class.svg
+  - Interface.svg
+- https://github.com/radix-ui/icons (MIT LICENSE)
+  - Component.svg
+- https://github.com/primer/octicons (MIT LICENSE)
+  - Package.svg
+  - Project.svg
+- https://github.com/Remix-Design/RemixIcon (Apache 2.0)
+  - Operation.svg
+- https://github.com/carbon-design-system/carbon (Apache 2.0)
+  - Annotation.svg
+  - ApplicationConcern.svg
+  - ApplicationService.svg
+  - Class.svg
+  - Channel.svg
+  - Command.svg
+  - ComponentExchange.svg
+  - Controller.svg
+  - Domain.svg
+  - Enum.svg
+  - Event.svg
+  - Folder.svg
+  - GenericType.svg
+  - Parameter.svg
+  - ProvidedService.svg
+  - Query.svg
+  - Repository.svg
+  - RequiredService.svg
+  - Service.svg
+  - Task.svg
+  - TypeParameter.svg
+- https://github.com/microsoft/fluentui-system-icons (MIT LICENSE)
+  - ComponentPort.svg
+- https://github.com/tabler/tabler-icons (MIT LICENSE)
+  - Contribution.svg
+- https://github.com/phosphor-icons/core (MIT LICENSE)
+  - AnnotationField.svg
+  - Attribute.svg
+  - DataType.svg
+  - EnumLiteral.svg
+  - Iteration.svg
+  - Record.svg
+  - RecordComponent.svg
+  - Tag.svg
+- https://github.com/iconoir-icons/iconoir (MIT LICENSE)
+  - Visibility_PUBLIC.svg
+  - Visibility_PRIVATE.svg
+  - Visibility_PROTECTED.svg
+  - Visibility_PACKAGE.svg
+- https://github.com/material-icons/material-icons (Apache License)
+  - Constructor.svg
+  - Publication.svg
+  - Subscription.svg

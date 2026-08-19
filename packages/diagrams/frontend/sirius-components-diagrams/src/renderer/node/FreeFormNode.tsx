@@ -1,0 +1,188 @@
+/*******************************************************************************
+ * Copyright (c) 2023, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+
+import { ServerContext, ServerContextValue, getCSSColor } from '@eclipse-sirius/sirius-components-core';
+import { Theme, useTheme } from '@mui/material/styles';
+import { Node, NodeProps } from '@xyflow/react';
+import React, { memo, useContext, useMemo } from 'react';
+import { makeStyles } from 'tss-react/mui';
+import { BorderNodePosition } from '../DiagramRenderer.types';
+import { Label } from '../Label';
+import { ActionsContainer } from '../actions/ActionsContainer';
+import { useConnectionLineNodeStyle } from '../connector/useConnectionLineNodeStyle';
+import { useConnectorNodeStyle } from '../connector/useConnectorNodeStyle';
+import { useDrop } from '../drop/useDrop';
+import { useDropNodeStyle } from '../dropNode/useDropNodeStyle';
+import { ConnectionCreationHandles } from '../handles/ConnectionCreationHandles';
+import { ConnectionHandles } from '../handles/ConnectionHandles';
+import { ConnectionTargetHandle } from '../handles/ConnectionTargetHandle';
+import { useRefreshConnectionHandles } from '../handles/useRefreshConnectionHandles';
+import { DraggableResizableOutsideLabel } from './DraggableResizableOutsideLabel';
+import { FreeFormNodeData } from './FreeFormNode.types';
+import { NodeComponentsMap } from './NodeTypes';
+import { Resizer } from './Resizer';
+
+const freeFormNodeStyle = (
+  theme: Theme,
+  style: React.CSSProperties,
+  selected: boolean,
+  hovered: boolean,
+  faded: boolean
+): React.CSSProperties => {
+  const freeFormNodeStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    opacity: faded ? '0.4' : '',
+    ...style,
+    borderColor: getCSSColor(String(style.borderColor), theme),
+  };
+  if (selected || hovered) {
+    freeFormNodeStyle.outline = `${theme.palette.selected} solid 1px`;
+  }
+  return freeFormNodeStyle;
+};
+
+const backgroundNodeStyle = (
+  theme: Theme,
+  style: React.CSSProperties,
+  rotation: string | undefined,
+  imageURL: string | undefined
+): React.CSSProperties => {
+  const freeFormNodeStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    transform: rotation,
+    background: getCSSColor(String(style.background), theme),
+    borderRadius: style.borderRadius,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: -1,
+  };
+  if (imageURL) {
+    freeFormNodeStyle.backgroundImage = `url(${imageURL})`;
+    freeFormNodeStyle.backgroundRepeat = 'no-repeat';
+    freeFormNodeStyle.backgroundSize = '100% 100%';
+  }
+  return freeFormNodeStyle;
+};
+
+const useStyles = makeStyles()((_) => ({
+  labelAndAction: {
+    display: 'grid',
+    gridTemplateRows: '1fr',
+    gridTemplateColumns: 'minmax(0, 1fr)',
+  },
+  label: {
+    gridRow: 1,
+    gridColumn: 1,
+  },
+}));
+
+const computeBorderRotation = (data: FreeFormNodeData): string | undefined => {
+  if (data?.isBorderNode && data.positionDependentRotation) {
+    switch (data.borderNodePosition) {
+      case BorderNodePosition.NORTH:
+        return 'rotate(90deg)';
+      case BorderNodePosition.EAST:
+        return 'rotate(180deg)';
+      case BorderNodePosition.SOUTH:
+        return 'rotate(270deg)';
+      default:
+        return undefined;
+    }
+  }
+  return undefined;
+};
+
+export const FreeFormNode: NodeComponentsMap['freeFormNode'] = memo(
+  ({ data, id, selected, dragging }: NodeProps<Node<FreeFormNodeData>>) => {
+    const { httpOrigin } = useContext<ServerContextValue>(ServerContext);
+    const { classes } = useStyles();
+
+    const theme = useTheme();
+    const { onDrop, onDragOver } = useDrop();
+
+    const rotation = useMemo(
+      () => computeBorderRotation(data),
+      [data.isBorderNode, data.positionDependentRotation, data.borderNodePosition]
+    );
+    let imageURL: string | undefined = undefined;
+    if (data.imageURL) {
+      imageURL = httpOrigin + data.imageURL;
+    }
+
+    const { style: connectionFeedbackStyle } = useConnectorNodeStyle(id, data.nodeDescription.id);
+    const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
+    const { style: connectionLineActiveNodeStyle } = useConnectionLineNodeStyle(data.connectionLinePositionOnNode);
+    const nodeStyle = useMemo(
+      () => freeFormNodeStyle(theme, data.style, !!selected, data.isHovered, data.faded),
+      [data.style, !!selected, data.isHovered, data.faded]
+    );
+    const backgroundStyle = useMemo(
+      () => backgroundNodeStyle(theme, data.style, rotation, imageURL),
+      [data.style, rotation, imageURL]
+    );
+
+    const handleOnDrop = (event: React.DragEvent) => {
+      onDrop(event, id);
+    };
+
+    useRefreshConnectionHandles(id, data.connectionHandles);
+
+    let actionsSection: JSX.Element | null = null;
+    if (data.isHovered) {
+      actionsSection = <ActionsContainer diagramElementId={id} />;
+    }
+
+    return (
+      <>
+        <Resizer data={data} selected={!!selected} />
+        <div
+          style={{
+            ...nodeStyle,
+            ...connectionFeedbackStyle,
+            ...dropFeedbackStyle,
+            ...connectionLineActiveNodeStyle,
+          }}
+          data-svg={data.isListChild ? 'rect:compartment' : 'rect'}
+          className="custom-drag-handle"
+          onDragOver={onDragOver}
+          onDrop={handleOnDrop}
+          data-testid={`FreeForm - ${data?.targetObjectLabel}`}>
+          <div data-svg="image" style={{ ...backgroundStyle }} />
+          <div className={classes.labelAndAction}>
+            <div className={classes.label}>
+              {data.insideLabel && <Label diagramElementId={id} label={data.insideLabel} faded={data.faded} />}
+            </div>
+            {actionsSection}
+          </div>
+          {selected ? <ConnectionCreationHandles nodeId={id} /> : null}
+          <ConnectionTargetHandle nodeId={id} nodeDescription={data.nodeDescription} isHovered={data.isHovered} />
+          <ConnectionHandles connectionHandles={data.connectionHandles} />
+        </div>
+        {data.outsideLabels.BOTTOM_MIDDLE &&
+          (!data.outsideLabels.BOTTOM_MIDDLE.style.visibility ||
+            data.outsideLabels.BOTTOM_MIDDLE.style.visibility === 'visible') && (
+            <DraggableResizableOutsideLabel
+              id={id}
+              label={data.outsideLabels.BOTTOM_MIDDLE}
+              faded={data.faded}
+              selected={selected}
+              hovered={data.isHovered}
+            />
+          )}
+      </>
+    );
+  }
+);

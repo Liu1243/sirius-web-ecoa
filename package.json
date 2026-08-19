@@ -1,0 +1,31 @@
+{
+  "name": "@eclipse-sirius/sirius-components-parent",
+  "version": "2025.12.5",
+  "author": "Eclipse Sirius",
+  "license": "EPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse-sirius/sirius-web"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "engines": {
+    "node": "22.16.0",
+    "npm": "10.9.2"
+  },
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "./packages/*/frontend/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "start": "turbo run start --concurrency=32",
+    "test": "turbo run test",
+    "coverage": "turbo run coverage"
+  },
+  "devDependencies": {
+    "turbo": "2.4.4",
+    "vite": "^7.1.1"
+  }
+}

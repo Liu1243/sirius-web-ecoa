@@ -1,0 +1,22 @@
+extend type Subscription {
+  selectionDialogTreeEvent(input: SelectionDialogTreeEventInput!): TreeEventPayload!
+}
+
+input SelectionDialogTreeEventInput {
+  id: ID!
+  editingContextId: ID!
+  representationId: String!
+}
+
+type SelectionDescription implements RepresentationDescription {
+  id: ID!
+  label: String!
+  message(variables: [SelectionDialogVariable!]!): String!
+  treeDescription: TreeDescription!
+  multiple: Boolean!
+}
+
+input SelectionDialogVariable {
+  name: String!
+  value: String!
+}

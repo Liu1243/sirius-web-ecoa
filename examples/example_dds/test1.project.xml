@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ECOAProject xmlns="http://www.ecoa.technology/project-2.0" name="test1">
+  <outputDirectory>6-output</outputDirectory>
+  <types>
+    <file>0-Types/VD_lib.types.xml</file>
+  </types>
+  <serviceDefinitions>
+    <file>1-Services/svc_VD.interface.xml</file>
+    <file>1-Services/svc_finish.interface.xml</file>
+  </serviceDefinitions>
+  <componentDefinitions>
+    <file>2-ComponentDefinitions/Writer/Writer.componentType</file>
+    <file>2-ComponentDefinitions/Finisher/Finisher.componentType</file>
+    <file>2-ComponentDefinitions/Reader/Reader.componentType</file>
+  </componentDefinitions>
+  <initialAssembly>3-InitialAssembly/demo.composite</initialAssembly>
+  <componentImplementations>
+    <file>4-ComponentImplementations/mycompFinisher/mycompFinisher.impl.xml</file>
+    <file>4-ComponentImplementations/mycompWriter/mycompWriter.impl.xml</file>
+    <file>4-ComponentImplementations/mycompReader/mycompReader.impl.xml</file>
+  </componentImplementations>
+  <implementationAssembly>5-Integration/demo.impl.composite</implementationAssembly>
+  <logicalSystem>5-Integration/cs1.logical-system.xml</logicalSystem>
+  <deploymentSchema>5-Integration/demo.deployment.xml</deploymentSchema>
+</ECOAProject>

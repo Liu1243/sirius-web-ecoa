@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright (c) 2025 Obeo.&#xA;This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v2.0&#xA;which accompanies this distribution, and is available at&#xA;https://www.eclipse.org/legal/epl-2.0/&#xA;&#xA;SPDX-License-Identifier: EPL-2.0&#xA;&#xA;Contributors:&#xA;    Obeo - initial API and implementation"
+    modelDirectory="/sirius-components-view-table/src/main/java" creationIcons="false"
+    editDirectory="/sirius-components-view-table-edit/src/main/java" editorDirectory=""
+    modelPluginID="sirius-components-view-table" modelName="Table" editPluginClass="org.eclipse.sirius.components.view.table.provider.TableEditPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    commentFormatting="true" testsDirectory="" testSuiteClass="org.eclipse.sirius.components.view.table.tests.TableAllTests"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="17.0"
+    copyrightFields="false" editPluginID="sirius-components-view-table-edit" testsPluginID="sirius-components-view-table.editor"
+    usedGenPackages="../../../../../sirius-components-view/src/main/resources/model/view.genmodel#//view"
+    operationReflection="true" importOrganizing="true" cleanup="true">
+  <foreignModel>table.ecore</foreignModel>
+  <genPackages prefix="Table" basePackage="org.eclipse.sirius.components.view" disposableProviderFactory="true"
+      extensibleProviderFactory="true" childCreationExtenders="true" ecorePackage="table.ecore#/">
+    <genClasses ecoreClass="table.ecore#//TableDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//TableDescription/useStripedRowsExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//TableDescription/columnDescriptions"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference table.ecore#//TableDescription/rowDescription"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//TableDescription/cellDescriptions"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//TableDescription/enableSubRows"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//TableDescription/rowFilters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//TableDescription/pageSizeOptionsExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//TableDescription/defaultPageSizeIndexExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//ColumnDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/domainType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/semanticCandidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/preconditionExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/headerIndexLabelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/headerLabelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/headerIconExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/initialWidthExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/isResizableExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/filterWidgetExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//ColumnDescription/isSortableExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//RowDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/semanticCandidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/headerLabelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/headerIconExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/headerIndexLabelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/initialHeightExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/isResizableExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//RowDescription/contextMenuEntries"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/depthLevelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowDescription/hasChildrenExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//CellDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellDescription/preconditionExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellDescription/selectedTargetObjectExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellDescription/valueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellDescription/tooltipExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//CellDescription/cellWidgetDescription"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="table.ecore#//CellWidgetDescription"/>
+    <genClasses ecoreClass="table.ecore#//CellTextfieldWidgetDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//CellTextfieldWidgetDescription/body"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//CellLabelWidgetDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//CellLabelWidgetDescription/iconExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//RowContextMenuEntry">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowContextMenuEntry/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowContextMenuEntry/labelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowContextMenuEntry/iconURLExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowContextMenuEntry/preconditionExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//RowContextMenuEntry/body"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//CellTextareaWidgetDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference table.ecore#//CellTextareaWidgetDescription/body"/>
+    </genClasses>
+    <genClasses ecoreClass="table.ecore#//RowFilterDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowFilterDescription/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowFilterDescription/labelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute table.ecore#//RowFilterDescription/initialStateExpression"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

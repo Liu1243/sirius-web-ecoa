@@ -1,0 +1,164 @@
+= Sirius Web
+
+https://www.eclipse.dev/sirius/sirius-web.html[Eclipse Sirius Web] is a framework to easily create and deploy studios to the web.
+We keep the principles which made the success of https://www.eclipse.dev/sirius[Eclipse Sirius Desktop] and make them available on a modern cloud-based stack.
+
+image::doc/images/ProjectEditor.png[Sirius Web]
+
+This repository contains the building blocks from which Sirius Web applications are built.
+The folder `packages` contains both the Spring Boot projects from which the corresponding backend is built and the reusable React components used to build the application's UI.
+It also contains the Sirius Web sample application.
+
+To test _Sirius Web_ you have two possible options:
+
+. If you just want to run an already built version of the example application, follow link:#quick-start[the Quick Start].
+. If you want to _build_ the example application yourself, follow link:#build[the complete build instructions].
+
+[#quick-start]
+== Quick Start
+
+If you want a quick overview of how Sirius Web looks and feels like without building the sample application yourself:
+
+1. Install https://www.docker.com/[Docker] if you do not have it already.
+2. Download the https://raw.githubusercontent.com/eclipse-sirius/sirius-web/refs/heads/master/docker-compose.yml[`docker-compose.yml`] file from the root of the Sirius Web git repository.
+3. Open a terminal in the directory where you put the `docker-compose.yml` file, and issue `docker compose up`.
+
+Docker will automatically download and start both the database (PostgreSQL) image and the latest version of Sirius Web published https://hub.docker.com/r/eclipsesirius/sirius-web[on Docker Hub].
+
+WARNING: This may take a while the first time you run this as Docker will first pull the required Docker images.
+
+Once the application is started, simply point your browser at http://localhost:8080 and enjoy!
+
+When you are done, you can stop the application by hitting Ctrl-c from the terminal where you launcher `docker compose up`.
+
+NOTE: This way of running the application is only useful for quick testing and should not be used for actual deployments.
+
+[#build]
+== Building
+
+=== Requirements
+
+To build the components in this repository on your own, you will need the following tools installed:
+
+* Git, and a GitHub account
+* To build the backend components:
+** https://adoptium.net/temurin/releases/[Java 17]
+** https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/[Apache Maven 3.6.3]
+** https://www.docker.com/[Docker] must be installed and running for some of the backend components tests to run.
+* To build the frontend components:
+** LTS versions of https://nodejs.org/[Node and NPM]: in particular, Node >= 22.16.0 is required along with npm >= 10.9.2.
+** https://turbo.build[TurboRepo] (`npm install -g turbo`)
+
+WARNING: Note that there are issues with NPM under Windows Subsystem for Linux (WSL).
+If you use WSL and encounter error messages like _"Maximum call stack size exceeded"_ when running NPM, switch to plain Windows where this should work.
+
+For Windows users: Due to the Maximum Path Length Limitation of Windows, you may exceed the limit of 260 characters in your PATH. To remove this limitation, apply the https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell[this procedure] with this command line in PowerShell (`New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force`), then active the longpath option in Git in a command line with administrator rights (`git config --system core.longpaths true`).
+
+=== GitHub Access Token
+
+The backend components of this repository depends on https://github.com/eclipse-sirius/sirius-emf-json[`sirius-emf-json`], which is published as Maven artifacts in _GitHub Packages_.
+The frontend components of this repository depends on https://github.com/ObeoNetwork/react-trello[`@ObeoNetwork/react-trello`] and https://github.com/ObeoNetwork/gantt-task-react[`@ObeoNetwork/gantt-task-react`], which are published as Node artifacts in _GitHub Packages_.
+To build `sirius-web` locally, you need a _GitHub Access Token_ so that:
+* Maven can download the `sirius-emf-json` and `Flow-Designer` artifacts.
+* Node can download the `@ObeoNetwork/react-trello` and `@ObeoNetwork/gantt-task-react` artifacts.
+
+. Create a personal token with a scope of `read:package` by following https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token[the GitHub documentation] if you do not have one already.
++
+WARNING: Once generated, a token cannot be displayed anymore, so make sure to copy it in a secure location.
+. Create or edit `$HOME/.m2/settings.xml` to tell Maven to use this token when accessing the Sirius EMF JSON repository:
++
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>github-sirius-emfjson</id>
+      <username>$GITHUB_USERNAME</username>
+      <password>$GITHUB_ACCESS_TOKEN</password>
+    </server>
+    <server>
+      <id>github-flow</id>
+      <username>$GITHUB_USERNAME</username>
+      <password>$GITHUB_ACCESS_TOKEN</password>
+    </server>
+  </servers>
+</settings>
+----
++
+Be sure to replace `$GITHUB_USERNAME` with your GitHub user id, and `$GITHUB_ACCESS_TOKEN` with the value of your access token.
++
+IMPORTANT: The `id` used in your `settings.xml` *must* be `github-sirius-emfjson` and `github-flow` to match what is used in the POMs.
+
+. Create or edit `$HOME/.npmrc` to tell Node to use this token when accessing the Github Node artifacts repository:
++
+[source,sh]
+----
+//npm.pkg.github.com/:_authToken=$GITHUB_ACCESS_TOKEN
+----
++
+Be sure to replace `$GITHUB_ACCESS_TOKEN` with the value of your access token.
+
+
+=== Build the frontend & backend components and Sirius Web
+
+1. Clone this repository
+2. Build the frontend packages:
++
+[source,sh]
+----
+npm ci
+npx turbo run build
+----
++
+
+NOTE: In order to run tests, use `npx turbo run coverage`
++
+
+[WARNING]
+====
+To build the package `@eclipse-sirius/sirius-components-diagrams` the `mkdir` command is required.
+
+For Windows users, according to the link:https://docs.npmjs.com/cli/v8/using-npm/config#script-shell[npm documentation] the default value for script-shell configuration on Windows is `cmd.exe` which does not support the `mkdir` command. We recommend to use link:https://git-scm.com/downloads[git bash] instead of the default command tool.
+
+Then you can set the `script-shell` configuration with the following command:
+[source,sh]
+----
+npm config set script-shell "C:\Program Files\Git\bin\bash.exe"
+----
+====
+
+3. Install the frontend artifacts as static resource to be served by the backend.
+From the root directory of the repository:
++
+[source,sh]
+----
+mkdir -p packages/sirius-web/backend/sirius-web-frontend/src/main/resources/static
+cp -R packages/sirius-web/frontend/sirius-web/dist/* packages/sirius-web/backend/sirius-web-frontend/src/main/resources/static
+----
+
+4. Build the backend components.
++
+[source,sh]
+----
+mvn clean install -f packages/pom.xml
+----
++
+TIP: If you are behind a proxy, you may get Maven errors about checkstyle.org not being available.
+In this case you need to explicitly disable CheckStyle from the build: `mvn clean install -f releng/org.eclipse.sirius.emfjson.releng/pom.xml -P\!checkstyle`
++
+NOTE: https://www.docker.com/[Docker] must be installed and running for some of the backend components tests to run.
+If Docker is not present, you can still build the backend by skipping the tests execution with `mvn clean install -f packages/pom.xml -DskipTests`.
+
+5. You can find in the output artifacts in the various `target` folders of the backend components and the `dist` folders of the frontend components.
+You could publish those to your maven or npm repository to consume them in other applications.
+We are already publishing those components in the NPM and maven repositories of our Github organization.
++
+Using these instructions, we can find a Spring Boot "fat JAR" in `packages/sirius-web/backend/sirius-web/target/sirius-web-{YEAR.MONTH.COUNT-SNAPSHOT}.jar`.
+Refer to the instructions in the "Quick Start" section above to launch it.
+
+== License
+
+Everything in this repository is Open Source. Except when explicitly mentioned otherwise (e.g. for some resources likes icons which are under Apache-2.0), the license is Eclipse Public License - v 2.0.

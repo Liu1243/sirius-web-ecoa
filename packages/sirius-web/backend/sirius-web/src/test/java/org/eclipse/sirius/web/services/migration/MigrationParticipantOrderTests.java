@@ -1,0 +1,160 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2026 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+
+package org.eclipse.sirius.web.services.migration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.eclipse.sirius.components.charts.hierarchy.Hierarchy;
+import org.eclipse.sirius.components.collaborative.api.IRepresentationMetadataPersistenceService;
+import org.eclipse.sirius.components.collaborative.api.IRepresentationPersistenceService;
+import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
+import org.eclipse.sirius.components.core.RepresentationMetadata;
+import org.eclipse.sirius.components.core.api.IEditingContextSearchService;
+import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
+import org.eclipse.sirius.web.AbstractIntegrationTests;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
+import org.eclipse.sirius.web.data.MigrationIdentifiers;
+import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.services.api.IRepresentationContentSearchService;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticData;
+import org.eclipse.sirius.web.tests.data.GivenSiriusWebServer;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Integration tests to check the execution order of migration participant and representation migration participant.
+ *
+ * @author gcoutable
+ */
+@Transactional
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(MigrationParticipantOrderTestsConfiguration.class)
+public class MigrationParticipantOrderTests extends AbstractIntegrationTests {
+
+    @Autowired
+    private IEditingContextSearchService editingContextSearchService;
+
+    @Autowired
+    private IRepresentationContentSearchService representationContentSearchService;
+
+    @Autowired
+    private IRepresentationSearchService representationSearchService;
+
+    @Autowired
+    private IRepresentationMetadataPersistenceService representationMetadataPersistenceService;
+
+    @Autowired
+    private IRepresentationPersistenceService representationPersistenceService;
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project with an old hierarchy representation, when the representation is loaded, then the most recent representation migration participant is the last applied.")
+    public void testRepresentationMigrationParticipantExecutionOrder() {
+        var optionalEditingContext = this.editingContextSearchService.findById(MigrationIdentifiers.MIGRATION_NODE_DESCRIPTION_LABEL_EXPRESSION_STUDIO.toString());
+        assertThat(optionalEditingContext).isPresent();
+
+        var editingContext = optionalEditingContext.get();
+
+        var optionalRepresentation = this.representationSearchService.findById(editingContext, MigrationIdentifiers.MIGRATION_STUDIO_DIAGRAM_HIERARCHY.toString(), Hierarchy.class);
+        assertThat(optionalRepresentation).isPresent();
+
+        Hierarchy hierarchy = optionalRepresentation.get();
+        assertThat(hierarchy.getChildNodes()).hasSize(1);
+
+        this.representationPersistenceService.save(null, editingContext, optionalRepresentation.get());
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        var semanticData = AggregateReference.<SemanticData, UUID>to(UUID.fromString(editingContext.getId()));
+        var representationMetadata = AggregateReference.<org.eclipse.sirius.web.domain.boundedcontexts.representationdata.RepresentationMetadata, UUID>to(MigrationIdentifiers.MIGRATION_STUDIO_DIAGRAM_HIERARCHY);
+        var optionalUpdatedRepresentationContent = this.representationContentSearchService.findContentById(semanticData, representationMetadata);
+        assertThat(optionalUpdatedRepresentationContent).isPresent();
+
+        var updatedRepresentationContent = optionalUpdatedRepresentationContent.get();
+
+        assertThat(updatedRepresentationContent.getMigrationVersion()).isEqualTo("9999.12.99-300012310900");
+        // The name is empty because we registered an anonymous representation migration participant.
+        assertThat(updatedRepresentationContent.getLastMigrationPerformed()).isEqualTo("");
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given a project, when a new Hierarchy representation is created, then the initial representation migration participant is the most recent representation migration participant.")
+    public void testRepresentationMigrationParticipantOnCreatedRepresentation() {
+        var optionalEditingContext = this.editingContextSearchService.findById(MigrationIdentifiers.MIGRATION_NODE_DESCRIPTION_LABEL_EXPRESSION_STUDIO.toString());
+        assertThat(optionalEditingContext).isPresent();
+
+        var editingContext = optionalEditingContext.get();
+
+        var optionalRepresentation = this.representationSearchService.findById(editingContext, MigrationIdentifiers.MIGRATION_STUDIO_DIAGRAM_HIERARCHY.toString(), Hierarchy.class);
+        assertThat(optionalRepresentation).isPresent();
+        var representation = optionalRepresentation.get();
+        var newHierarchy = new Hierarchy(UUID.randomUUID().toString(), representation.getDescriptionId(), representation.getTargetObjectId(), representation.getKind(), representation.getChildNodes());
+
+        var representationMetadata = RepresentationMetadata.newRepresentationMetadata(newHierarchy.getId())
+                .kind(newHierarchy.getKind())
+                .label("new Hierarchy")
+                .descriptionId(newHierarchy.getDescriptionId())
+                .iconURLs(List.of())
+                .build();
+
+        this.representationMetadataPersistenceService.save(null, editingContext, representationMetadata, newHierarchy.getTargetObjectId());
+        this.representationPersistenceService.save(null, editingContext, newHierarchy);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+
+        var semanticData = AggregateReference.<SemanticData, UUID>to(UUID.fromString(editingContext.getId()));
+
+        var optionalUpdatedRepresentationContent = this.representationContentSearchService.findContentById(semanticData, AggregateReference.to(UUID.fromString(newHierarchy.getId())));
+        assertThat(optionalUpdatedRepresentationContent).isPresent();
+        var updatedRepresentationContent = optionalUpdatedRepresentationContent.get();
+
+        assertThat(updatedRepresentationContent.getMigrationVersion()).isEqualTo("9999.12.99-300012310900");
+        // The name is not empty because the initial representation migration participant is initialized with "none"
+        assertThat(updatedRepresentationContent.getLastMigrationPerformed()).isEqualTo("none");
+    }
+
+    @Test
+    @GivenSiriusWebServer
+    @DisplayName("Given an old model, when the model is retrieved, then the last migration participant applied is the most recent one.")
+    public void testMigrationParticipantExecutionOrder() {
+        var optionalEditingContext = this.editingContextSearchService.findById(MigrationIdentifiers.MIGRATION_NODE_DESCRIPTION_LABEL_EXPRESSION_STUDIO.toString());
+        assertThat(optionalEditingContext).isPresent();
+        if (optionalEditingContext.get() instanceof EditingContext siriusWebEditingContext) {
+            var resource = siriusWebEditingContext.getDomain().getResourceSet().getResource(MigrationIdentifiers.MIGRATION_NODE_DESCRIPTION_LABEL_EXPRESSION_STUDIO_DIAGRAM_URI, true);
+            var optionalResourceMetadataAdapter = resource.eAdapters().stream()
+                    .filter(ResourceMetadataAdapter.class::isInstance)
+                    .map(ResourceMetadataAdapter.class::cast)
+                    .findFirst();
+            assertThat(optionalResourceMetadataAdapter).isPresent();
+            var resourceMetadataAdapter = optionalResourceMetadataAdapter.get();
+            var migrationData = resourceMetadataAdapter.getLastMigrationData();
+            assertThat(migrationData.migrationVersion()).isEqualTo("9999.12.99-300012310901");
+            // The name is empty because we registered an anonymous migration participant.
+            assertThat(migrationData.lastMigrationPerformed()).isEqualTo("");
+        }
+    }
+}

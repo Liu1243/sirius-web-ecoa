@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="view" nsURI="http://www.eclipse.org/sirius-web/view" nsPrefix="view">
+  <eClassifiers xsi:type="ecore:EDataType" name="Identifier" instanceClassName="java.lang.String"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="InterpretedExpression" instanceClassName="java.lang.String"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="DomainType" instanceClassName="java.lang.String"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Color" instanceClassName="java.lang.String"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Length" instanceClassName="int"/>
+  <eClassifiers xsi:type="ecore:EClass" name="View">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="descriptions" upperBound="-1"
+        eType="#//RepresentationDescription" containment="true" eKeys="#//RepresentationDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="colorPalettes" upperBound="-1"
+        eType="#//ColorPalette" containment="true" eKeys="#//ColorPalette/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textStylePalettes" upperBound="-1"
+        eType="#//TextStylePalette" containment="true" eKeys="#//TextStylePalette/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ColorPalette">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="colors" upperBound="-1"
+        eType="#//UserColor" containment="true" eKeys="#//UserColor/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FixedColor" eSuperTypes="#//UserColor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="#//Color"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UserColor" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="#//Identifier"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RepresentationDescription" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="#//Identifier"
+        defaultValueLiteral="NewRepresentationDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="#//DomainType"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preconditionExpression"
+        eType="#//InterpretedExpression" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="titleExpression" eType="#//InterpretedExpression"
+        defaultValueLiteral="aql:'New Representation'"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iconExpression" eType="#//InterpretedExpression"
+        defaultValueLiteral=""/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LabelStyle" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fontSize" lowerBound="1"
+        eType="#//Length" defaultValueLiteral="14"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="italic" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bold" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="underline" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="strikeThrough" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Operation" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//Operation" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ChangeContext" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expression" lowerBound="1"
+        eType="#//InterpretedExpression" defaultValueLiteral="aql:self"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CreateInstance" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeName" lowerBound="1"
+        eType="#//DomainType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="referenceName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variableName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="newInstance"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SetValue" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="featureName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" lowerBound="1"
+        eType="#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UnsetValue" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="featureName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="elementExpression" lowerBound="1"
+        eType="#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteElement" eSuperTypes="#//Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Let" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variableName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueExpression" lowerBound="1"
+        eType="#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="If" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="conditionExpression" lowerBound="1"
+        eType="#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Conditional" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condition" lowerBound="1"
+        eType="#//InterpretedExpression" defaultValueLiteral="aql:false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="For" eSuperTypes="#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expression" lowerBound="1"
+        eType="#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iteratorName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TextStylePalette">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="styles" upperBound="-1"
+        eType="#//TextStyleDescription" containment="true" eKeys="#//TextStyleDescription/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TextStyleDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="foregroundColorExpression"
+        eType="#//InterpretedExpression" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="backgroundColorExpression"
+        eType="#//InterpretedExpression" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isBoldExpression" eType="#//InterpretedExpression"
+        defaultValueLiteral="aql:false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isItalicExpression" eType="#//InterpretedExpression"
+        defaultValueLiteral="aql:false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isUnderlineExpression"
+        eType="#//InterpretedExpression" defaultValueLiteral="aql:false"/>
+  </eClassifiers>
+</ecore:EPackage>

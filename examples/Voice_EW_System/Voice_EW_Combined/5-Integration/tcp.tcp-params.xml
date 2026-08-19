@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TCP transport binding configuration (跨平台点对点 ELI 链路).
+  每个 platform 一个监听地址/端口:
+    Platform_YYY 监听 20001, Platform_EW 监听 20002, Platform_XXX 监听 20003
+  本地联动验证时全部指向 127.0.0.1; 真实分布式部署时改为各节点实际 IP。
+  (注: 与 UDP 组播方案相比, TCP 为点对点连接, platform 条目为本包模型对象,
+   导入/导出时不会丢失 — 这是相对 UDP binding 的主要优势。)
+-->
+<TCPBinding xmlns="http://www.ecoa.technology/tcpbinding">
+  <platform name="Platform_YYY" address="127.0.0.1" port="20001"/>
+  <platform name="Platform_EW" address="127.0.0.1" port="20002"/>
+  <platform name="Platform_XXX" address="127.0.0.1" port="20003"/>
+</TCPBinding>

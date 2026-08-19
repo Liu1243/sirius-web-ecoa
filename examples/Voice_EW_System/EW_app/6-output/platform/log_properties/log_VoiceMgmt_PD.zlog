@@ -1,0 +1,6 @@
+[formats]
+simple = "%m%n"
+[rules]
+VoiceMgmt_PD.DEBUG    "./logs/log_VoiceMgmt_PD.log"; simple
+VoiceMgmt_PD_PF.DEBUG    "./logs/log_VoiceMgmt_PD_PF.log"; simple
+

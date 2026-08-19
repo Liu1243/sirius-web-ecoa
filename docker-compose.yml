@@ -1,0 +1,151 @@
+name: sirius-web
+
+services:
+  # ============================================
+  # PostgreSQL 数据库 (独立容器)
+  # ============================================
+  postgres:
+    image: docker.1ms.run/postgres:15
+    command:
+      [
+        "postgres",
+        "-c",
+        "listen_addresses=*",
+        "-c",
+        "hba_file=/etc/postgresql/pg_hba.conf",
+      ]
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpwd
+      POSTGRES_DB: sirius-web-db
+    volumes:
+      - ./deployment/docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - sirius-web-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d sirius-web-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================
+  # 后端服务 (Backend + Frontend, 连接独立 PostgreSQL)
+  # ============================================
+  sirius-web-full:
+    image: sirius-web-sirius-web-full:${SIRIUS_WEB_FULL_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.all
+      args:
+        USERNAME: ${GITHUB_USERNAME:-}
+        PASSWORD: ${GITHUB_TOKEN:-}
+        GITHUB_TOKEN: ${GITHUB_TOKEN:?GITHUB_TOKEN is not set. Please export GITHUB_TOKEN=your_token}
+      additional_contexts:
+        # Windows: m2-context=C:\Users\1\.m2\repository
+        # Mac/Linux: 使用本地 Maven 仓库路径或注释掉这行
+        - m2-context=${M2_CONTEXT_PATH:-/tmp/m2}
+    platform: ${DOCKER_PLATFORM:-linux/amd64}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./workspace:/workspace
+      # 开发模式：挂载本地前端 dist 文件夹，修改即时生效（不需要重新构建镜像）
+      # 生产环境请注释掉下面这行，使用镜像内置的前端文件
+      - ./packages/sirius-web/frontend/sirius-web/dist:/app/static:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: "docker"
+      SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS: "*"
+      SIRIUS_WEB_ENABLED: "*"
+      # 数据库连接 (指向独立 postgres 容器)
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/sirius-web-db"
+      # 开发模式：从外部路径加载前端静态资源（挂载的 volume）
+      # 生产环境请注释掉下面这行，使用镜像内置的前端文件
+      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: "file:/app/static/,classpath:/static/"
+      SPRING_DATASOURCE_USERNAME: "dbuser"
+      SPRING_DATASOURCE_PASSWORD: "dbpwd"
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
+      # ECOA generator integration (now directly hitting ecoa-tools Flask API)
+      ECOA_PYTHON_GENERATOR_URL: "http://ecoa-tools:5000"
+      ECOA_WORKSPACE_DIR: "/workspace"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ecoa-tools:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ============================================
+  # ECOA Tools Service (Python/Flask)
+  # 执行真实 ecoa-exvt / mscigt / asctg / csmgvt / ldp 工具并调度 pipeline
+  # ============================================
+  ecoa-tools:
+    image: sirius-web-ecoa-tools:${ECOA_TOOLS_TAG:-latest}
+    platform: linux/amd64   # 生产环境：Ubuntu amd64
+    build:
+      context: ./ecoa-tools
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # projects_base_dir 指向共享 workspace
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      # Pipeline 调度依赖的环境变量
+      SIRIUS_WEB_URL: "http://sirius-web-full:8080"
+      ECOA_WORKSPACE: "/workspace"
+      ECOA_DISTRIBUTED_DEBUG_CLIENT_CONTAINER: "code-server"
+      # Docker connection for distributed debug. Prefer the mounted Docker socket.
+      # Override only when the host explicitly exposes a Docker TCP API.
+      DOCKER_HOST: "${ECOA_TOOLS_DOCKER_HOST:-unix:///var/run/docker.sock}"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Code Server Service (Web-based VS Code IDE)
+  # 基于 ecoa-tools 镜像构建，与 ecoa-tools 共享完全相同的编译和运行环境
+  # (Python venv / gcc / cmake / bison / flex / ecoa 工具链均可直接使用)
+  # ============================================
+  code-server:
+    image: sirius-web-code-server:${CODE_SERVER_TAG:-latest}
+    platform: linux/amd64   # 生产环境：Ubuntu amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.code-server
+      args:
+        ECOA_TOOLS_BASE: sirius-web-ecoa-tools:${ECOA_TOOLS_TAG:-latest}
+    container_name: code-server
+    environment:
+      TZ: Asia/Shanghai
+      PASSWORD: password              # Web UI 访问密码
+      # 确保终端中可直接使用 ecoa-tools venv 的 python/pip
+      VIRTUAL_ENV: /app/.venv
+      PATH: /app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      ECOA_WORKSPACE: "/workspace"
+    volumes:
+      - code-server-config:/root/.local/share/code-server  # code-server 配置持久化
+      - ./workspace:/workspace                          # 与 sirius-web-full / ecoa-tools 共享
+    ports:
+      - "8443:8080"   # 对外暴露 8443，容器内 code-server 监听 8080
+    depends_on:
+      - ecoa-tools
+    restart: unless-stopped
+
+volumes:
+  sirius-web-data:
+  ecoa-workspace:   # sirius-web-full / ecoa-tools 间共享（Docker 命名卷）
+  code-server-config:  # code-server 配置持久化

@@ -1,0 +1,123 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.components.graphql.tests;
+
+import static org.assertj.core.api.Assertions.fail;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.sirius.components.core.api.IInput;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLResult;
+import org.eclipse.sirius.components.graphql.tests.api.GraphQLSubscriptionResult;
+import org.eclipse.sirius.components.graphql.tests.api.IGraphQLRequestor;
+import org.springframework.stereotype.Service;
+
+import graphql.ExecutionInput;
+import graphql.ExecutionResult;
+import graphql.GraphQL;
+import graphql.execution.reactive.SubscriptionPublisher;
+import reactor.core.publisher.Flux;
+
+/**
+ * Used to execute GraphQL requests.
+ *
+ * @author sbegaudeau
+ */
+@Service
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
+public class GraphQLRequestor implements IGraphQLRequestor {
+
+    private final ObjectMapper objectMapper;
+
+    private final GraphQL graphQL;
+
+    public GraphQLRequestor(ObjectMapper objectMapper, GraphQL graphQL) {
+        this.objectMapper = Objects.requireNonNull(objectMapper);
+        this.graphQL = Objects.requireNonNull(graphQL);
+    }
+
+    @Override
+    public GraphQLResult execute(String query, Map<String, Object> variables) {
+        var executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .variables(variables)
+                .build();
+
+        var executionResult = this.graphQL.execute(executionInput);
+        try {
+            var result = this.objectMapper.writeValueAsString(executionResult.toSpecification());
+            return new GraphQLResult(result, executionResult.getErrors(), executionResult.getExtensions());
+        } catch (JsonProcessingException exception) {
+            fail(exception.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public GraphQLResult execute(String query, IInput input) {
+        Map<String, Object> variables = Map.of("input", this.objectMapper.convertValue(input, new TypeReference<Map<String, Object>>() { }));
+        return this.execute(query, variables);
+    }
+
+    @Override
+    public GraphQLSubscriptionResult subscribe(String query, IInput input) {
+        Map<String, Object> variables = Map.of("input", this.objectMapper.convertValue(input, new TypeReference<Map<String, Object>>() { }));
+
+        var executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .variables(variables)
+                .build();
+
+        var executionResult = this.graphQL.execute(executionInput);
+
+        SubscriptionPublisher result = executionResult.getData();
+        var flux = Flux.from(result.getUpstreamPublisher());
+
+        return new GraphQLSubscriptionResult(flux, executionResult.getErrors(), executionResult.getExtensions());
+    }
+
+    @Override
+    public GraphQLSubscriptionResult subscribeToSpecification(String query, IInput input) {
+        Map<String, Object> variables = Map.of("input", this.objectMapper.convertValue(input, new TypeReference<Map<String, Object>>() { }));
+
+        var executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .variables(variables)
+                .build();
+
+        var executionResult = this.graphQL.execute(executionInput);
+
+        SubscriptionPublisher publisher = executionResult.getData();
+        var flux = Flux.from(publisher)
+                .map(ExecutionResult::toSpecification)
+                .flatMap(this::toString)
+                .map(Object.class::cast);
+
+        return new GraphQLSubscriptionResult(flux, executionResult.getErrors(), executionResult.getExtensions());
+    }
+
+    private Flux<String> toString(Map<String, Object> response) {
+        Flux<String> body = Flux.empty();
+        try {
+            body = Flux.just(this.objectMapper.writeValueAsString(response));
+        } catch (JsonProcessingException exception) {
+            fail(exception.getMessage());
+        }
+        return body;
+    }
+}

@@ -1,0 +1,61 @@
+# Code Server with ECOA Tools Environment
+# 以 ecoa-tools 为基础，叠加 code-server，使两者拥有完全相同的编译和运行环境
+# --mount=type=bind 需要 BuildKit（Docker 23.0+ 默认启用，或设置 DOCKER_BUILDKIT=1）
+
+# ── 复用 ecoa-tools 的完整环境 ──────────────────────────────────────
+# 生产环境使用 sirius-web-ecoa-tools，开发环境使用 sirius-web-dev-ecoa-tools
+ARG ECOA_TOOLS_BASE=sirius-web-ecoa-tools:latest
+FROM ${ECOA_TOOLS_BASE}
+
+ARG CODE_SERVER_VERSION=4.111.0
+# TARGETARCH 由 BuildKit 自动注入：amd64 / arm64
+ARG TARGETARCH
+
+# ── 安装 apt 系统包 ───────────────────────────────────────────────────
+# 使用 BuildKit 缓存挂载：apt 包缓存存于构建机本地，缓存失效时不重复下载
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    sudo \
+    gdbserver
+
+# ── 【优化】用 --mount=type=bind 安装 code-server deb 包 ──────────────
+# 文件仅在 RUN 步骤期间挂载，安装后不会残留在任何镜像层（节省 ~123 MB）
+RUN --mount=type=bind,source=code-server_${CODE_SERVER_VERSION}_${TARGETARCH}.deb,target=/tmp/code-server.deb \
+    dpkg -i /tmp/code-server.deb
+
+# ── 【优化】用 --mount=type=bind 安装 VS Code 插件 ────────────────────
+# vsix 文件仅在 RUN 期间挂载，安装后不留在镜像层（节省 ~200 MB）
+RUN --mount=type=bind,source=vs-extension,target=/tmp/vs-extension \
+    set -e; \
+    # makefile-tools：无架构区分
+    [ -f /tmp/vs-extension/makefile-tools.vsix ] \
+        && code-server --install-extension /tmp/vs-extension/makefile-tools.vsix; \
+    # cpptools：amd64 用 linux-x64，arm64 优先用 linux-arm64（容器运行在 Linux）
+    # 下载地址：https://github.com/microsoft/vscode-cpptools/releases
+    #   推荐：cpptools-linux-arm64.vsix（Linux arm64，兼容 Apple Silicon Docker 容器）
+    #   备用：cpptools-macOS-arm64.vsix（macOS arm64，gcc 插件在 Linux 下会报平台不兼容）
+    if [ "${TARGETARCH}" = "arm64" ]; then \
+        if [ -f /tmp/vs-extension/cpptools-linux-arm64.vsix ]; then \
+            CPPTOOLS=/tmp/vs-extension/cpptools-linux-arm64.vsix; \
+        else \
+            CPPTOOLS=/tmp/vs-extension/cpptools-macOS-arm64.vsix; \
+        fi; \
+    else \
+        CPPTOOLS=/tmp/vs-extension/cpptools-linux-x64.vsix; \
+    fi; \
+    [ -f "$CPPTOOLS" ] && code-server --install-extension "$CPPTOOLS"; \
+    # cline：无架构区分
+    [ -f /tmp/vs-extension/cline-3.86.1.vsix ] \
+        && code-server --install-extension /tmp/vs-extension/cline-3.86.1.vsix; \
+    rm -rf /root/.local/share/code-server/extensions/.pending*
+
+# 确保 PATH 中包含 venv 的 python/pip，方便在终端直接调试
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# 暴露 code-server 默认端口
+EXPOSE 8080
+
+# 默认以 root 运行（与 ecoa-tools 保持一致），无需密码认证（开发模式）
+CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "/workspace"]

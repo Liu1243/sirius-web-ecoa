@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  UDP transport binding configuration.
+  Schema: http://www.ecoa.technology/udpbinding-2.0 (ecoa-udpbinding-2.0.xsd)
+  Referenced by cs1.logical-system.xml transportBinding/@parameters
+
+  platformId must match ELIPlatformId defined in the logical system:
+    Platform_Ping  ELIPlatformId="1" → platformId="1"
+    Platform_Pong  ELIPlatformId="2" → platformId="2"
+
+  Constraint: platformId range is 0–15 (max 16 platforms per UDP binding).
+-->
+<UDPBinding xmlns="http://www.ecoa.technology/udpbinding-2.0">
+
+  <platform platformId="1"
+            name="Platform_Ping"
+            receivingPort="20001"
+            receivingMulticastAddress="225.192.1.1"
+            maxChannels="256"/>
+
+  <platform platformId="2"
+            name="Platform_Pong"
+            receivingPort="20002"
+            receivingMulticastAddress="225.192.1.1"
+            maxChannels="256"/>
+
+</UDPBinding>

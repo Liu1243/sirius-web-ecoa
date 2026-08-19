@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.ecoa.technology/types-2.0">
+  <types>
+
+    <!--
+      struct1 : 事件数据
+      内容 = 9 x unsigned short + 4 x unsigned char
+      由电子自卫应用(语音管理服务)发布, YYY应用接收后据此改变设备自身状态。
+      topic_id 字段对应需求中的 topicID, 语音管理服务据此查找对应的 struct1。
+    -->
+    <record name="event_data">
+      <field name="topic_id"     type="ECOA:uint16"/>
+      <field name="status_word_0" type="ECOA:uint16"/>
+      <field name="status_word_1" type="ECOA:uint16"/>
+      <field name="status_word_2" type="ECOA:uint16"/>
+      <field name="status_word_3" type="ECOA:uint16"/>
+      <field name="status_word_4" type="ECOA:uint16"/>
+      <field name="status_word_5" type="ECOA:uint16"/>
+      <field name="status_word_6" type="ECOA:uint16"/>
+      <field name="status_word_7" type="ECOA:uint16"/>
+      <field name="flag_0"        type="ECOA:uint8"/>
+      <field name="flag_1"        type="ECOA:uint8"/>
+      <field name="flag_2"        type="ECOA:uint8"/>
+      <field name="flag_3"        type="ECOA:uint8"/>
+    </record>
+
+    <!--
+      struct2 : 版本化数据
+      内容 = 5 x unsigned short + 9 x unsigned char
+      由 YYY 应用周期性(5s)发送给电子自卫应用(语音管理服务缓存)。
+    -->
+    <record name="versioned_data">
+      <field name="version"    type="ECOA:uint16"/>
+      <field name="sample_0"   type="ECOA:uint16"/>
+      <field name="sample_1"   type="ECOA:uint16"/>
+      <field name="sample_2"   type="ECOA:uint16"/>
+      <field name="sample_3"   type="ECOA:uint16"/>
+      <field name="channel_0"  type="ECOA:uint8"/>
+      <field name="channel_1"  type="ECOA:uint8"/>
+      <field name="channel_2"  type="ECOA:uint8"/>
+      <field name="channel_3"  type="ECOA:uint8"/>
+      <field name="channel_4"  type="ECOA:uint8"/>
+      <field name="channel_5"  type="ECOA:uint8"/>
+      <field name="channel_6"  type="ECOA:uint8"/>
+      <field name="channel_7"  type="ECOA:uint8"/>
+      <field name="channel_8"  type="ECOA:uint8"/>
+    </record>
+
+    <!-- JSON 文本: 大模型与语音管理服务之间交换的 JSON 报文 -->
+    <array name="json_text" itemType="ECOA:char8" maxNumber="1024"/>
+
+    <!-- 语音消息: XXX 应用发送给大模型的语音内容 -->
+    <array name="voice_msg" itemType="ECOA:char8" maxNumber="512"/>
+
+  </types>
+</library>
+

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2022, 2025 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.eclipse.sirius</groupId>
+	<artifactId>sirius-components-view-root</artifactId>
+	<version>2025.12.5</version>
+
+	<name>sirius-components-view-root</name>
+	<description>Sirius Components View Root</description>
+	<packaging>pom</packaging>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
+		</repository>
+	</distributionManagement>
+
+	<modules>
+		<module>sirius-components-view</module>
+		<module>sirius-components-view-edit</module>
+		<module>sirius-components-view-emf</module>
+		<module>sirius-components-view-emf-widget-reference</module>
+		<module>sirius-components-view-builder-generator</module>
+		<module>sirius-components-view-builder</module>
+		<module>sirius-components-view-diagram</module>
+		<module>sirius-components-view-diagram-edit</module>
+		<module>sirius-components-view-gantt</module>
+		<module>sirius-components-view-gantt-edit</module>
+		<module>sirius-components-view-deck</module>
+		<module>sirius-components-view-deck-edit</module>
+		<module>sirius-components-view-form</module>
+		<module>sirius-components-view-form-edit</module>
+		<module>sirius-components-widget-reference-view</module>
+		<module>sirius-components-widget-reference-view-edit</module>
+		<module>sirius-components-view-diagram-customnodes</module>
+		<module>sirius-components-view-diagram-customnodes-edit</module>
+		<module>sirius-components-view-table</module>
+		<module>sirius-components-view-table-edit</module>
+		<module>sirius-components-view-table-customcells</module>
+		<module>sirius-components-view-table-customcells-edit</module>
+		<module>sirius-components-view-tree</module>
+		<module>sirius-components-view-tree-edit</module>
+		<module>sirius-components-widget-table-view</module>
+		<module>sirius-components-widget-table-view-edit</module>
+		<module>sirius-components-view-emf-widget-table</module>
+	</modules>
+</project>

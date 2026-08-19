@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ID_map xmlns="http://www.ecoa.technology/uid-2.0">
+  <ID key="compVoiceMgmt/svc_versioned_data:compYYYDevice/svc_versioned_data:versioned_data" value="1611300215"/>
+  <ID key="compYYYDevice/svc_event_data:compVoiceMgmt/svc_event_data:event_data" value="1758054607"/>
+  <ID key="compXXXDevice/svc_voice_msg:compLLMModel/svc_voice_msg:voice_control" value="657021877"/>
+  <ID key="compXXXDevice/svc_voice_msg:compLLMModel/svc_voice_msg:voice_query" value="1617140922"/>
+  <ID key="compLLMModel/svc_json_cmd:compVoiceMgmt/svc_json_cmd:json_control" value="1892203028"/>
+  <ID key="compLLMModel/svc_vd_query:compVoiceMgmt/svc_vd_query:query_versioned_json" value="1985629425"/>
+</ID_map>
+

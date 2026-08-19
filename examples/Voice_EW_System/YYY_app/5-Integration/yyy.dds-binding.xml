@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  YYY 应用 DDS 中间件绑定:
+  与电子自卫应用(EW_app)、XXX 应用(XXX_app)使用相同的 DDS domain,
+  三个独立 ECOA 工程经 DDS 中间件互联。
+-->
+<DDSBinding xmlns="http://www.ecoa.technology/ddsbinding">
+  <domain id="0"/>
+</DDSBinding>
+

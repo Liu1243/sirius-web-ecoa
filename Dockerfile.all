@@ -1,0 +1,138 @@
+# ==============================
+# Stage 1: Node Build (Frontend)
+# ==============================
+FROM docker.1ms.run/node:22 AS frontend-builder
+
+WORKDIR /app
+
+# Copy root-level settings
+COPY package.json package-lock.json turbo.json .npmrc ./
+
+# Configure NPM auth
+ARG GITHUB_TOKEN
+RUN if [ -z "$GITHUB_TOKEN" ]; then echo "ERROR: GITHUB_TOKEN build argument is missing."; exit 1; fi
+RUN echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
+
+# Copy frontend packages
+COPY packages/browser/frontend/ packages/browser/frontend/
+COPY packages/charts/frontend/ packages/charts/frontend/
+COPY packages/core/frontend/ packages/core/frontend/
+COPY packages/datatree/frontend/ packages/datatree/frontend/
+COPY packages/deck/frontend/ packages/deck/frontend/
+COPY packages/diagrams/frontend/ packages/diagrams/frontend/
+COPY packages/formdescriptioneditors/frontend/ packages/formdescriptioneditors/frontend/
+COPY packages/forms/frontend/ packages/forms/frontend/
+COPY packages/gantt/frontend/ packages/gantt/frontend/
+COPY packages/palette/frontend/ packages/palette/frontend/
+COPY packages/portals/frontend/ packages/portals/frontend/
+COPY packages/releng/frontend/ packages/releng/frontend/
+COPY packages/selection/frontend/ packages/selection/frontend/
+COPY packages/sirius-web/frontend/ packages/sirius-web/frontend/
+COPY packages/tables/frontend/ packages/tables/frontend/
+COPY packages/trees/frontend/ packages/trees/frontend/
+COPY packages/validation/frontend/ packages/validation/frontend/
+
+# 切换默认 registry 到国内镜像（@ObeoNetwork 仍走 GitHub Packages，见 .npmrc）
+RUN npm config set registry https://registry.npmmirror.com
+
+# Install dependencies（加重试参数防止偶发网络抖动）
+RUN npm install --fetch-retries=5 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=60000
+
+# Override turbo.json to skip format-lint
+RUN echo '{"$schema":"https://turborepo.org/schema.json","tasks":{"build":{"dependsOn":["^build"],"outputs":["dist/**"]}}}' > turbo.json
+
+# Build frontend
+RUN npx turbo run build
+
+# ==============================
+# Stage 2: Maven Build (Backend)
+# 只 COPY backend 目录，不引入 frontend 源码（体积大且 Maven 不需要）
+# frontend dist 通过 --from=frontend-builder 跨 stage 引入
+# ==============================
+FROM docker.1ms.run/maven:3.9-eclipse-temurin-17 AS backend-builder
+
+WORKDIR /app
+
+# Copy Maven settings
+COPY settings.xml /root/.m2/settings.xml
+
+# Copy root pom.xml
+COPY packages/pom.xml packages/pom.xml
+
+# Copy only backend source (frontend/ dirs are excluded — not needed by Maven)
+COPY packages/browser/backend/       packages/browser/backend/
+COPY packages/charts/backend/        packages/charts/backend/
+COPY packages/core/backend/          packages/core/backend/
+COPY packages/datatree/backend/      packages/datatree/backend/
+COPY packages/deck/backend/          packages/deck/backend/
+COPY packages/diagrams/backend/      packages/diagrams/backend/
+COPY packages/domain/backend/        packages/domain/backend/
+COPY packages/ecoa/backend/          packages/ecoa/backend/
+COPY packages/edt/backend/           packages/edt/backend/
+COPY packages/emf/backend/           packages/emf/backend/
+COPY packages/formdescriptioneditors/backend/ packages/formdescriptioneditors/backend/
+COPY packages/forms/backend/         packages/forms/backend/
+COPY packages/gantt/backend/         packages/gantt/backend/
+COPY packages/papaya/backend/        packages/papaya/backend/
+COPY packages/portals/backend/       packages/portals/backend/
+COPY packages/releng/backend/        packages/releng/backend/
+COPY packages/selection/backend/     packages/selection/backend/
+COPY packages/sirius-web/backend/    packages/sirius-web/backend/
+COPY packages/starters/backend/      packages/starters/backend/
+COPY packages/tables/backend/        packages/tables/backend/
+COPY packages/task/backend/          packages/task/backend/
+COPY packages/tests/backend/         packages/tests/backend/
+COPY packages/trees/backend/         packages/trees/backend/
+COPY packages/validation/backend/    packages/validation/backend/
+COPY packages/view/backend/          packages/view/backend/
+COPY packages/web/backend/           packages/web/backend/
+
+# Copy frontend dist into backend static resources (as per README)
+COPY --from=frontend-builder /app/packages/sirius-web/frontend/sirius-web/dist/ \
+    packages/sirius-web/backend/sirius-web-frontend/src/main/resources/static/
+
+# Build backend (fat JAR includes frontend static files)
+ARG USERNAME
+ARG PASSWORD
+ENV USERNAME=${USERNAME}
+ENV PASSWORD=${PASSWORD}
+
+# 从 docker-compose 声明的 additional_contexts 中引入宿主机的 .m2 真正的物理路径
+COPY --from=m2-context . /root/.m2/repository/
+
+RUN cd packages && mvn clean install \
+    -DskipTests \
+    -pl sirius-web/backend/sirius-web \
+    -am \
+    --batch-mode \
+    -Dcheckstyle.skip=true
+
+# ==============================
+# Stage 3: Final Runtime (JRE only, PostgreSQL runs as a separate container)
+# ==============================
+FROM docker.1ms.run/eclipse-temurin:21-jre
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy built fat JAR (contains both backend + frontend)
+COPY --from=backend-builder /app/packages/sirius-web/backend/sirius-web/target/sirius-web-*.jar ./sirius-web.jar
+
+# Copy wait-for-postgres script
+COPY wait-for-postgres.sh /usr/local/bin/wait-for-postgres.sh
+RUN chmod +x /usr/local/bin/wait-for-postgres.sh
+
+# Spring Boot connects to PostgreSQL via environment variable (defaults to separate postgres container)
+ENV SERVER_PORT=8080
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sirius-web-db
+ENV SPRING_DATASOURCE_USERNAME=dbuser
+ENV SPRING_DATASOURCE_PASSWORD=dbpwd
+ENV SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS=*
+ENV SIRIUS_WEB_ENABLED=*
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/local/bin/wait-for-postgres.sh"]

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 版本化数据(struct2)服务: 提供方周期性(5s)发布, 消费方订阅 -->
+<serviceDefinition xmlns="http://www.ecoa.technology/interface-2.0">
+  <use library="Common_lib"/>
+  <operations>
+    <data name="versioned_data" type="Common_lib:versioned_data"/>
+  </operations>
+</serviceDefinition>
+

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ Copyright (c) 2024, 2025 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+ 
+ SPDX-License-Identifier: EPL-2.0
+ 
+ Contributors:
+     Obeo - initial API and implementation
+-->
+
+<plugin
+      name="%pluginName"
+      id="com.dassault.edt.model"
+      version="1.0.0"
+      provider-name="%providerName">
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.emf.ecore" export="true"/>
+      <import plugin="org.eclipse.emf.ecore.xmi" export="true"/>
+      <import plugin="sirius-components-ecoa" export="true"/>
+   </requires>
+
+   <runtime>
+      <library name=".">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtbin"
+            class="edtbin.EdtbinPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtdeployment"
+            class="edtdeployment.EdtdeploymentPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtimplementation"
+            class="edtimplementation.EdtimplementationPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtlogical"
+            class="edtlogical.EdtlogicalPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="EDTProject2"
+            class="edtproject.EDTProjectPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtqos"
+            class="edtqos.EdtqosPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="EDTService"
+            class="edtinterface.EDTInterfacePackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated EDT -->
+      <parser
+            type="edtinterface"
+            class="edtinterface.util.EDTInterfaceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="EDTTypes"
+            class="edttype.EDTTypePackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="temp"
+            class="temp.TempPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtudp"
+            class="edtudp.EdtudpPackage"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated EDT -->
+      <package
+            uri="edtuid"
+            class="edtuid.EdtuidPackage"/>
+   </extension>
+
+</plugin>

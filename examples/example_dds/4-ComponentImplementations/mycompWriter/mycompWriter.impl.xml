@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<componentImplementation xmlns="http://www.ecoa.technology/implementation-2.0" componentDefinition="Writer">
+  <use library="VD_lib"/>
+  <moduleType name="myCompWriter_mod_t0">
+    <operations>
+      <dataWritten name="write_vector" type="VD_lib:vector_data"/>
+      <eventSent name="finish"/>
+    </operations>
+  </moduleType>
+  <moduleType name="myCompWriter_write_only_t">
+    <operations>
+      <dataWritten name="write_vector" type="VD_lib:vector_data" writeOnly="true"/>
+      <eventSent name="finish"/>
+    </operations>
+  </moduleType>
+  <moduleImplementation language="C" moduleType="myCompWriter_mod_t0" name="myCompWriter_mod0"/>
+  <moduleImplementation language="C" moduleType="myCompWriter_write_only_t" name="myCompWriter_write_only"/>
+  <moduleInstance name="myCompWriter_mod_inst0" relativePriority="100" implementationName="myCompWriter_mod0"/>
+  <moduleInstance name="myCompWriter_mod_inst1" relativePriority="100" implementationName="myCompWriter_mod0"/>
+  <moduleInstance name="myCompWriter_write_only_inst" relativePriority="100" implementationName="myCompWriter_write_only"/>
+  <dataLink>
+    <writers>
+      <moduleInstance instanceName="myCompWriter_mod_inst1" operationName="write_vector"/>
+      <moduleInstance instanceName="myCompWriter_write_only_inst" operationName="write_vector"/>
+    </writers>
+    <readers>
+      <service instanceName="svc_writer" operationName="some_data1"/>
+    </readers>
+  </dataLink>
+  <dataLink>
+    <writers>
+      <moduleInstance instanceName="myCompWriter_mod_inst0" operationName="write_vector"/>
+    </writers>
+    <readers>
+      <service instanceName="svc_writer" operationName="some_data0"/>
+    </readers>
+  </dataLink>
+  <eventLink>
+    <senders>
+      <moduleInstance instanceName="myCompWriter_mod_inst0" operationName="finish"/>
+      <moduleInstance instanceName="myCompWriter_mod_inst1" operationName="finish"/>
+      <moduleInstance instanceName="myCompWriter_write_only_inst" operationName="finish"/>
+    </senders>
+    <receivers>
+      <reference instanceName="svc_finish" operationName="finish"/>
+    </receivers>
+  </eventLink>
+</componentImplementation>

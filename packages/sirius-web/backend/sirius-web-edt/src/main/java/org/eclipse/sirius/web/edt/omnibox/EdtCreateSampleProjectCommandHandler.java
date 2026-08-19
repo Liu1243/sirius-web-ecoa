@@ -1,0 +1,48 @@
+/*******************************************************************************
+ * Copyright (c) 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.edt.omnibox;
+
+import java.util.Objects;
+
+import org.eclipse.sirius.components.collaborative.omnibox.api.IWorkbenchOmniboxCommandHandler;
+import org.eclipse.sirius.components.collaborative.omnibox.dto.ExecuteWorkbenchOmniboxCommandInput;
+import org.eclipse.sirius.components.core.api.IPayload;
+import org.eclipse.sirius.components.graphql.api.IEditingContextDispatcher;
+import org.springframework.stereotype.Service;
+
+/**
+ * Handles the command to create a sample EDT project.
+ *
+ * @author EDT Team
+ */
+@Service
+public class EdtCreateSampleProjectCommandHandler implements IWorkbenchOmniboxCommandHandler {
+
+    private final IEditingContextDispatcher editingContextDispatcher;
+
+    public EdtCreateSampleProjectCommandHandler(IEditingContextDispatcher editingContextDispatcher) {
+        this.editingContextDispatcher = Objects.requireNonNull(editingContextDispatcher);
+    }
+
+    @Override
+    public boolean canHandle(ExecuteWorkbenchOmniboxCommandInput input) {
+        return Objects.equals(input.commandId(), EdtCreateSampleProjectCommandProvider.CREATE_SAMPLE_PROJECT_COMMAND_ID);
+    }
+
+    @Override
+    public IPayload handle(ExecuteWorkbenchOmniboxCommandInput input) {
+        var editingContextDispatcherInput = new EdtCreateSampleProjectInput(input.id());
+        return this.editingContextDispatcher.dispatchMutation(input.editingContextId(), editingContextDispatcherInput).block();
+    }
+
+}

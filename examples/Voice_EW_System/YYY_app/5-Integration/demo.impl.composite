@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csa:composite xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0" name="demo" targetNamespace="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:service name="svc_versioned_data" promote="compYYYDevice/svc_versioned_data"/>
+  <csa:reference name="svc_event_data" promote="compYYYDevice/svc_event_data" multiplicity="1..1"/>
+  <csa:component name="compYYYDevice">
+    <ecoa-sca:instance componentType="YYYDevice">
+      <ecoa-sca:implementation name="mycompYYYDevice"/>
+    </ecoa-sca:instance>
+    <csa:service name="svc_versioned_data"/>
+    <csa:reference name="svc_event_data"/>
+  </csa:component>
+</csa:composite>
+

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.ecoa.technology/types-2.0">
+  <types>
+
+    <!--
+      struct1 : 事件数据 = 9 x unsigned short + 4 x unsigned char
+      (XXX 应用不直接收发 struct1, 此处保留定义以保持三个工程类型库一致)
+    -->
+    <record name="event_data">
+      <field name="topic_id"     type="ECOA:uint16"/>
+      <field name="status_word_0" type="ECOA:uint16"/>
+      <field name="status_word_1" type="ECOA:uint16"/>
+      <field name="status_word_2" type="ECOA:uint16"/>
+      <field name="status_word_3" type="ECOA:uint16"/>
+      <field name="status_word_4" type="ECOA:uint16"/>
+      <field name="status_word_5" type="ECOA:uint16"/>
+      <field name="status_word_6" type="ECOA:uint16"/>
+      <field name="status_word_7" type="ECOA:uint16"/>
+      <field name="flag_0"        type="ECOA:uint8"/>
+      <field name="flag_1"        type="ECOA:uint8"/>
+      <field name="flag_2"        type="ECOA:uint8"/>
+      <field name="flag_3"        type="ECOA:uint8"/>
+    </record>
+
+    <!--
+      struct2 : 版本化数据 = 5 x unsigned short + 9 x unsigned char
+      (XXX 应用不直接收发 struct2, 此处保留定义以保持三个工程类型库一致)
+    -->
+    <record name="versioned_data">
+      <field name="version"    type="ECOA:uint16"/>
+      <field name="sample_0"   type="ECOA:uint16"/>
+      <field name="sample_1"   type="ECOA:uint16"/>
+      <field name="sample_2"   type="ECOA:uint16"/>
+      <field name="sample_3"   type="ECOA:uint16"/>
+      <field name="channel_0"  type="ECOA:uint8"/>
+      <field name="channel_1"  type="ECOA:uint8"/>
+      <field name="channel_2"  type="ECOA:uint8"/>
+      <field name="channel_3"  type="ECOA:uint8"/>
+      <field name="channel_4"  type="ECOA:uint8"/>
+      <field name="channel_5"  type="ECOA:uint8"/>
+      <field name="channel_6"  type="ECOA:uint8"/>
+      <field name="channel_7"  type="ECOA:uint8"/>
+      <field name="channel_8"  type="ECOA:uint8"/>
+    </record>
+
+    <!-- JSON 文本: 大模型与语音管理服务之间交换的 JSON 报文 -->
+    <array name="json_text" itemType="ECOA:char8" maxNumber="1024"/>
+
+    <!-- 语音消息: XXX 应用发送给大模型的语音内容 -->
+    <array name="voice_msg" itemType="ECOA:char8" maxNumber="512"/>
+
+  </types>
+</library>
+

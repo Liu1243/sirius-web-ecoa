@@ -1,0 +1,172 @@
+/*******************************************************************************
+ * Copyright (c) 2023, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+
+export { SiriusWebApplication } from './application/SiriusWebApplication';
+export type { SiriusWebApplicationProps } from './application/SiriusWebApplication.types';
+export { ConfirmationDialogSettingsContextProvider } from './confirmationDialogSettings/ConfirmationDialogSettingsContext';
+export type { ConfirmationDialogSettingsContextValue } from './confirmationDialogSettings/ConfirmationDialogSettingsContext.types';
+export { DiagramRepresentationConfiguration } from './diagrams/DiagramRepresentationConfiguration';
+export type { NodeTypeRegistry } from './diagrams/DiagramRepresentationConfiguration.types';
+export { DefaultExtensionRegistryMergeStrategy } from './extension/DefaultExtensionRegistryMergeStrategy';
+export { defaultExtensionRegistry } from './extension/DefaultExtensionRegistry';
+export { ellipseNodeStyleDocumentTransform } from './extension/ellipsenode/EllipseNodeDocumentTransform';
+export { referenceWidgetDocumentTransform } from './extension/ReferenceWidgetDocumentTransform';
+export type { FooterProps } from './footer/Footer.types';
+export { footerExtensionPoint } from './footer/FooterExtensionPoints';
+export {
+  type ApolloClientOptionsConfigurer,
+  type CacheOptionsConfigurer,
+  type HttpOptionsConfigurer,
+  type WebSocketOptionsConfigurer,
+} from './graphql/useCreateApolloClient.types';
+export {
+  apolloClientOptionsConfigurersExtensionPoint,
+  cacheOptionsConfigurersExtensionPoint,
+  httpOptionsConfigurersExtensionPoint,
+  webSocketOptionsConfigurersExtensionPoint,
+} from './graphql/useCreateApolloClientExtensionPoints';
+export { I18nContextProvider } from './i18n/I18nContext';
+export type { I18NContextProviderProps } from './i18n/I18nContext';
+export { PublishLibraryDialog } from './libraries/PublishLibraryDialog';
+export { type PublishLibraryDialogProps } from './libraries/PublishLibraryDialog.types';
+export { LibrariesImportTable } from './libraryImport/LibrariesImportTable';
+export type { LibrariesImportTableProps } from './libraryImport/LibrariesImportTable.types';
+export { NavigationBar } from './navigationBar/NavigationBar';
+export {
+  type NavigationBarIconProps,
+  type NavigationBarLeftContributionProps,
+  type NavigationBarProps,
+  type NavigationBarRightContributionProps,
+} from './navigationBar/NavigationBar.types';
+export {
+  navigationBarCenterContributionExtensionPoint,
+  navigationBarIconExtensionPoint,
+  navigationBarLeftContributionExtensionPoint,
+  navigationBarRightContributionExtensionPoint,
+} from './navigationBar/NavigationBarExtensionPoints';
+export {
+  type NavigationBarMenuContainerProps,
+  type NavigationBarMenuHeaderProps,
+  type NavigationBarMenuIconProps,
+  type NavigationBarMenuItemProps,
+} from './navigationBar/NavigationBarMenu.types';
+export {
+  navigationBarMenuContainerExtensionPoint,
+  navigationBarMenuEntryExtensionPoint,
+  navigationBarMenuHeaderExtensionPoint,
+  navigationBarMenuHelpURLExtensionPoint,
+  navigationBarMenuIconExtensionPoint,
+} from './navigationBar/NavigationBarMenuExtensionPoints';
+export { ImportLibraryCommand } from './omnibox/ImportLibraryCommand';
+export { NewDocumentArea } from './onboarding/NewDocumentArea';
+export { type EditingContextAction, type NewDocumentAreaProps } from './onboarding/NewDocumentArea.types';
+export { NewRepresentationArea } from './onboarding/NewRepresentationArea';
+export {
+  type NewRepresentationAreaProps,
+  type RepresentationDescriptionMetadata,
+} from './onboarding/NewRepresentationArea.types';
+export { RepresentationsArea } from './onboarding/RepresentationsArea';
+export { type RepresentationAreaProps } from './onboarding/RepresentationsArea.types';
+export { routerExtensionPoint } from './router/RouterExtensionPoints';
+export { CursorBasedPagination } from './table/CursorBasedPagination';
+export type { CursorBasedPaginationProps } from './table/CursorBasedPagination.types';
+export { useCurrentViewer } from './viewer/useCurrentViewer';
+export type { UseCurrentViewerValue } from './viewer/useCurrentViewer.types';
+export { useViewer } from './viewer/useViewer';
+export type { UseViewerValue } from './viewer/useViewer.types';
+export { ViewerContext, ViewerContextProvider } from './viewer/ViewerContext';
+export type { ViewerContextProviderProps, ViewerContextValue } from './viewer/ViewerContext.types';
+export { DisplayLibraryView } from './views/display-library/DisplayLibraryView';
+export { EditProjectView } from './views/edit-project/EditProjectView';
+export type {
+  EditProjectNavbarMenuContainerProps,
+  EditProjectNavbarMenuEntryProps,
+} from './views/edit-project/navbar/context-menu/EditProjectNavbarContextMenu.types';
+export {
+  editProjectNavbarMenuContainerExtensionPoint,
+  editProjectNavbarMenuEntryExtensionPoint,
+} from './views/edit-project/navbar/context-menu/EditProjectNavbarMenuExtensionPoints';
+export type { EditProjectNavbarSubtitleProps } from './views/edit-project/navbar/EditProjectNavbar.types';
+export { useCurrentProject } from './views/edit-project/useCurrentProject';
+export type { UseCurrentProjectValue } from './views/edit-project/useCurrentProject.types';
+export type { GQLProject } from './views/edit-project/useProjectAndRepresentationMetadata.types';
+export { DetailsView } from './views/edit-project/workbench-views/details/DetailsView';
+export type { GQLDetailsEventPayload } from './views/edit-project/workbench-views/details/useDetailsViewSubscription.types';
+export { DuplicateObjectModal } from './views/edit-project/workbench-views/explorer/context-menu-contributions/duplicate-object/DuplicateObjectModal';
+export { type DuplicateObjectModalProps } from './views/edit-project/workbench-views/explorer/context-menu-contributions/duplicate-object/DuplicateObjectModal.types';
+export { ExpandAllTreeItemContextMenuContribution } from './views/edit-project/workbench-views/explorer/context-menu-contributions/expand-all/ExpandAllTreeItemContextMenuContribution';
+export { NewObjectModal } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-object/NewObjectModal';
+export { type NewObjectModalProps } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-object/NewObjectModal.types';
+export { NewRepresentationModal } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-representation/NewRepresentationModal';
+export { type NewRepresentationModalProps } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-representation/NewRepresentationModal.types';
+export { NewRootObjectModal } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-root-object/NewRootObjectModal';
+export { type NewRootObjectModalProps } from './views/edit-project/workbench-views/explorer/context-menu-contributions/new-root-object/NewRootObjectModal.types';
+export { UpdateLibraryModal } from './views/edit-project/workbench-views/explorer/context-menu-contributions/update-library/UpdateLibraryModal';
+export * from './views/edit-project/workbench-views/explorer/context-menu-contributions/update-library/UpdateLibraryModal.types';
+export { UpdateLibraryTreeItemContextMenuContribution } from './views/edit-project/workbench-views/explorer/context-menu-contributions/update-library/UpdateLibraryTreeItemContextMenuContribution';
+export { useExplorerSubscription } from './views/edit-project/workbench-views/explorer/useExplorerSubscription';
+export {
+  type GQLTreeEventPayload,
+  type GQLTreeRefreshedEventPayload,
+  type UseExplorerSubscriptionValue,
+} from './views/edit-project/workbench-views/explorer/useExplorerSubscription.types';
+export { useRelatedElementsViewSubscription } from './views/edit-project/workbench-views/related-elements/useRelatedElementsViewSubscription';
+export {
+  type GQLFormRefreshedEventPayload,
+  type GQLRelatedElementsEventPayload,
+  type UseRelatedElementsViewSubscriptionValue,
+} from './views/edit-project/workbench-views/related-elements/useRelatedElementsViewSubscription.types';
+export { SearchView } from './views/edit-project/workbench-views/search/SearchView';
+export { ErrorView } from './views/error/ErrorView';
+export { type ErrorMessageProvider } from './views/error/ErrorView.types';
+export { errorMessageProvidersExtensionPoint } from './views/error/ErrorViewExtensionPoints';
+export { LibraryBrowserView } from './views/library-browser/LibraryBrowserView';
+export { NewProjectView } from './views/new-project/NewProjectView';
+export { useAllProjectTemplates } from './views/new-project/useAllProjectTemplates';
+export type * from './views/new-project/useAllProjectTemplates.types';
+export { CreateProjectArea } from './views/project-browser/create-projects-area/CreateProjectArea';
+export { type CreateProjectAreaCardProps } from './views/project-browser/create-projects-area/CreateProjectArea.types';
+export type { CreateProjectAreaProps } from './views/project-browser/create-projects-area/CreateProjectArea.types';
+export { CreateProjectAreaCard } from './views/project-browser/create-projects-area/CreateProjectAreaCard';
+export { createProjectAreaCardExtensionPoint } from './views/project-browser/create-projects-area/CreateProjectAreaExtensionPoints';
+export { NewProjectCard } from './views/project-browser/create-projects-area/NewProjectCard';
+export { ShowAllProjectTemplatesCard } from './views/project-browser/create-projects-area/ShowAllProjectTemplatesCard';
+export { UploadProjectCard } from './views/project-browser/create-projects-area/UploadProjectCard';
+export { ListProjectsArea } from './views/project-browser/list-projects-area/ListProjectsArea';
+export type { ListProjectsAreaProps } from './views/project-browser/list-projects-area/ListProjectsArea.types';
+export { ProjectActionButton } from './views/project-browser/list-projects-area/ProjectActionButton';
+export { type ProjectContextMenuEntryProps } from './views/project-browser/list-projects-area/ProjectActionButton.types';
+export {
+  projectContextMenuContainerExtensionPoint,
+  projectContextMenuEntryExtensionPoint,
+} from './views/project-browser/list-projects-area/ProjectContextMenuExtensionPoints';
+export { ProjectsTable } from './views/project-browser/list-projects-area/ProjectsTable';
+export type { ProjectsTableProps } from './views/project-browser/list-projects-area/ProjectsTable.types';
+export { projectFilterCustomizersExtensionPoint } from './views/project-browser/list-projects-area/useProjectsExtensionPoints';
+export { type ProjectFilterCustomizer } from './views/project-browser/list-projects-area/useProjectsExtensionPoints.types';
+export { projectsTableColumnCustomizersExtensionPoint } from './views/project-browser/list-projects-area/useProjectsTableColumnsExtensionPoints';
+export { type ProjectsTableColumnCustomizer } from './views/project-browser/list-projects-area/useProjectsTableColumnsExtensionPoints.types';
+export { ProjectBrowserOmnibox } from './views/project-browser/ProjectBrowserOmnibox';
+export { type ProjectBrowserOmniboxProps } from './views/project-browser/ProjectBrowserOmnibox.types';
+export { ProjectBrowserView } from './views/project-browser/ProjectBrowserView';
+export { type ProjectImagesSettingsModal } from './views/project-settings/images/ProjectImagesSettings.types';
+export { UploadImageModal } from './views/project-settings/images/upload-image/UploadImageModal';
+export { useProjectImages } from './views/project-settings/images/useProjectImages';
+export { type GQLImageMetadata } from './views/project-settings/images/useProjectImages.types';
+export { ProjectSettingsView } from './views/project-settings/ProjectSettingsView';
+export {
+  type ProjectSettingTabContribution,
+  type ProjectSettingTabProps,
+} from './views/project-settings/ProjectSettingsView.types';
+export * from './views/project-settings/ProjectSettingsViewExtensionPoints';
+export { UploadProjectView } from './views/upload-project/UploadProjectView';

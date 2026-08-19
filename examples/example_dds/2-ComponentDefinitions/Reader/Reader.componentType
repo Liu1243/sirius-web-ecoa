@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:reference name="svc_reader">
+    <ecoa-sca:interface syntax="svc_VD"/>
+  </csa:reference>
+  <csa:reference name="svc_finish">
+    <ecoa-sca:interface syntax="svc_finish"/>
+  </csa:reference>
+</csa:componentType>

@@ -1,0 +1,117 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2026 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.application.representation.services;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.eclipse.sirius.components.core.RepresentationMetadata;
+import org.eclipse.sirius.components.core.api.IRepresentationMetadataProvider;
+import org.eclipse.sirius.components.core.graphql.dto.RepresentationMetadataDTO;
+import org.eclipse.sirius.web.application.UUIDParser;
+import org.eclipse.sirius.web.application.representation.services.api.IRepresentationApplicationService;
+import org.eclipse.sirius.web.application.representation.services.api.IRepresentationMetadataMapper;
+import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.services.api.IRepresentationMetadataSearchService;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticData;
+import org.eclipse.sirius.web.domain.pagination.Window;
+import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Used to interact with representations.
+ *
+ * @author sbegaudeau
+ */
+@Service
+public class RepresentationApplicationService implements IRepresentationApplicationService {
+
+    private final IRepresentationMetadataSearchService representationMetadataSearchService;
+
+    private final List<IRepresentationMetadataProvider> representationMetadataProviders;
+
+    private final IRepresentationMetadataMapper representationMetadataMapper;
+
+    public RepresentationApplicationService(IRepresentationMetadataSearchService representationMetadataSearchService, List<IRepresentationMetadataProvider> representationMetadataProviders,
+            IRepresentationMetadataMapper representationMetadataMapper) {
+        this.representationMetadataSearchService = Objects.requireNonNull(representationMetadataSearchService);
+        this.representationMetadataProviders = Objects.requireNonNull(representationMetadataProviders);
+        this.representationMetadataMapper = Objects.requireNonNull(representationMetadataMapper);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Window<RepresentationMetadataDTO> findAllByEditingContextId(String editingContextId, KeysetScrollPosition position, int limit) {
+        var optionalSemanticData = new UUIDParser().parse(editingContextId)
+                .map(AggregateReference::<SemanticData, UUID>to);
+        if (optionalSemanticData.isPresent()) {
+            var semanticData = optionalSemanticData.get();
+            var window = this.representationMetadataSearchService.findAllRepresentationMetadataBySemanticData(semanticData, position, limit);
+            return new Window<>(window.map(this.representationMetadataMapper::toDTO), window.hasPrevious());
+        }
+        return new Window<>(List.of(), index -> position, false, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RepresentationMetadataDTO> findRepresentationMetadataById(String editingContextId, String representationMetadataId) {
+        Optional<RepresentationMetadataDTO> optionalRepresentationMetadataDTO = Optional.empty();
+
+        var optionalSemanticData = new UUIDParser().parse(editingContextId)
+                .map(AggregateReference::<SemanticData, UUID>to);
+        var optionalRepresentationMetadataId = new UUIDParser().parse(representationMetadataId);
+        if (optionalSemanticData.isPresent() && optionalRepresentationMetadataId.isPresent()) {
+            var semanticData = optionalSemanticData.get();
+            var id = optionalRepresentationMetadataId.get();
+
+            optionalRepresentationMetadataDTO = this.representationMetadataSearchService.findMetadataById(semanticData, id)
+                    .map(this.representationMetadataMapper::toDTO);
+        }
+
+        if (optionalRepresentationMetadataDTO.isEmpty()) {
+            // If not found through IRepresentationMetadataSearchService, then ask the IRepresentationMetadataProvider
+            optionalRepresentationMetadataDTO = this.representationMetadataProviders.stream()
+                .flatMap(provider -> provider.getMetadata(editingContextId, representationMetadataId).stream())
+                .map(this::toDTO)
+                .findFirst();
+        }
+        return optionalRepresentationMetadataDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RepresentationMetadataDTO> findAllByEditingContextIdAndTargetObjectId(String editingContextId, String targetObjectId) {
+        var optionalSemanticData = new UUIDParser().parse(editingContextId)
+                .map(AggregateReference::<SemanticData, UUID>to);
+        if (optionalSemanticData.isPresent()) {
+            var semanticData = optionalSemanticData.get();
+            return this.representationMetadataSearchService.findAllRepresentationMetadataBySemanticDataAndTargetObjectId(semanticData, targetObjectId)
+                    .stream()
+                    .map(this.representationMetadataMapper::toDTO)
+                    .toList();
+        }
+        return List.of();
+    }
+
+    private RepresentationMetadataDTO toDTO(RepresentationMetadata representationMetadata) {
+        return new RepresentationMetadataDTO(representationMetadata.id(),
+                                             representationMetadata.label(),
+                                             representationMetadata.kind(),
+                                             representationMetadata.descriptionId(),
+                                             representationMetadata.iconURLs(),
+                                             "");
+    }
+}

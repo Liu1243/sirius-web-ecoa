@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  XXXDevice: XXX 应用(具备语音功能的智能设备)
+  功能: 发送 YYY 设备的查询指令(语音查询)和改变 YYY 设备状态(语音控制),
+        语音消息经中间件发往电子自卫应用的大模型。
+-->
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:reference name="svc_voice_msg">
+    <ecoa-sca:interface syntax="svc_voice_msg"/>
+  </csa:reference>
+</csa:componentType>
+

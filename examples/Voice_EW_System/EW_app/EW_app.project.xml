@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  电子自卫应用 ECOA 工程
+  功能:
+    (1) 周期性接收 YYY 应用的版本化数据 struct2, 语音管理服务实时缓存,
+        并据此修改 struct1(设备状态信息)
+    (2) 大模型将 XXX 应用的语音控制消息解析为带 topicID 的 JSON 发给语音管理服务,
+        语音管理服务按 topicID 查找 struct1 并修改, 修改后的 struct1 经中间件发给 YYY 应用
+    (3) XXX 应用发出语音查询消息时, 大模型从语音管理服务获取 struct2 对应的 JSON
+-->
+<ECOAProject xmlns="http://www.ecoa.technology/project-2.0" name="EW_app">
+  <outputDirectory>6-output</outputDirectory>
+  <types>
+    <file>0-Types/Common_lib.types.xml</file>
+  </types>
+  <serviceDefinitions>
+    <file>1-Services/svc_versioned_data.interface.xml</file>
+    <file>1-Services/svc_event_data.interface.xml</file>
+    <file>1-Services/svc_voice_msg.interface.xml</file>
+    <file>1-Services/svc_json_cmd.interface.xml</file>
+    <file>1-Services/svc_vd_query.interface.xml</file>
+  </serviceDefinitions>
+  <componentDefinitions>
+    <file>2-ComponentDefinitions/VoiceManagement/VoiceManagement.componentType</file>
+    <file>2-ComponentDefinitions/LLMModel/LLMModel.componentType</file>
+  </componentDefinitions>
+  <initialAssembly>3-InitialAssembly/demo.composite</initialAssembly>
+  <componentImplementations>
+    <file>4-ComponentImplementations/mycompVoiceMgmt/mycompVoiceMgmt.impl.xml</file>
+    <file>4-ComponentImplementations/mycompLLMModel/mycompLLMModel.impl.xml</file>
+  </componentImplementations>
+  <implementationAssembly>5-Integration/demo.impl.composite</implementationAssembly>
+  <logicalSystem>5-Integration/cs1.logical-system.xml</logicalSystem>
+  <deploymentSchema>5-Integration/demo.deployment.xml</deploymentSchema>
+</ECOAProject>
+

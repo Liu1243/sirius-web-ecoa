@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<componentImplementation xmlns="http://www.ecoa.technology/implementation-2.0" componentDefinition="Finisher">
+  <moduleType name="myCompFinisher_mod_t">
+    <operations>
+      <eventReceived name="finish_event"/>
+    </operations>
+  </moduleType>
+  <moduleImplementation language="C" moduleType="myCompFinisher_mod_t" name="myCompFinisher_mod"/>
+  <moduleInstance name="myCompFinisher_mod_inst" relativePriority="100" implementationName="myCompFinisher_mod"/>
+  <eventLink>
+    <senders>
+      <service instanceName="finish_interface" operationName="finish"/>
+    </senders>
+    <receivers>
+      <moduleInstance instanceName="myCompFinisher_mod_inst" operationName="finish_event"/>
+    </receivers>
+  </eventLink>
+</componentImplementation>

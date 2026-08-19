@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    copyrightText="Copyright (c) 2023, 2024 Obeo.&#xA;This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v2.0&#xA;which accompanies this distribution, and is available at&#xA;https://www.eclipse.org/legal/epl-2.0/&#xA;&#xA;SPDX-License-Identifier: EPL-2.0&#xA;&#xA;Contributors:&#xA;    Obeo - initial API and implementation"
+    modelDirectory="/sirius-components-view-deck/src/main/java" creationIcons="false"
+    editDirectory="/sirius-components-view-deck-edit/src/main/java" editorDirectory=""
+    modelPluginID="sirius-components-view-deck" modelName="Deck" editPluginClass="org.eclipse.sirius.components.view.deck.provider.DeckEditPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    commentFormatting="true" importerID="org.eclipse.emf.importer.ecore" bundleManifest="false"
+    complianceLevel="17.0" copyrightFields="false" editPluginID="sirius-components-view-deck-edit"
+    editorPluginID="sirius-components-view-deck-editor" usedGenPackages="../../../../../sirius-components-view/src/main/resources/model/view.genmodel#//view"
+    operationReflection="true" importOrganizing="true" cleanup="true">
+  <foreignModel>deck.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="Deck" basePackage="org.eclipse.sirius.components.view" disposableProviderFactory="true"
+      extensibleProviderFactory="true" childCreationExtenders="true" ecorePackage="deck.ecore#/">
+    <genClasses ecoreClass="deck.ecore#//DeckDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckDescription/laneDescriptions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckDescription/laneDropTool"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckDescription/conditionalStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//LaneDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//LaneDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//LaneDescription/domainType"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//LaneDescription/ownedCardDescriptions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//LaneDescription/editTool"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//LaneDescription/createTool"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//LaneDescription/cardDropTool"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//LaneDescription/isCollapsibleExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//CardDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//CardDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//CardDescription/domainType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//CardDescription/descriptionExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//CardDescription/editTool"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//CardDescription/deleteTool"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="deck.ecore#//DeckTool">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//DeckTool/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckTool/body"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//CreateCardTool"/>
+    <genClasses ecoreClass="deck.ecore#//EditCardTool"/>
+    <genClasses ecoreClass="deck.ecore#//DeleteCardTool"/>
+    <genClasses ecoreClass="deck.ecore#//EditLaneTool"/>
+    <genClasses ecoreClass="deck.ecore#//CardDropTool"/>
+    <genClasses ecoreClass="deck.ecore#//LaneDropTool"/>
+    <genClasses image="false" ecoreClass="deck.ecore#//DeckElementDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//DeckElementDescription/semanticCandidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//DeckElementDescription/titleExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute deck.ecore#//DeckElementDescription/labelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckElementDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference deck.ecore#//DeckElementDescription/conditionalStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//DeckDescriptionStyle">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference deck.ecore#//DeckDescriptionStyle/backgroundColor"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//ConditionalDeckDescriptionStyle"/>
+    <genClasses ecoreClass="deck.ecore#//DeckElementDescriptionStyle">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference deck.ecore#//DeckElementDescriptionStyle/backgroundColor"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference deck.ecore#//DeckElementDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="deck.ecore#//ConditionalDeckElementDescriptionStyle"/>
+  </genPackages>
+</genmodel:GenModel>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecoa:logicalSystem xmlns:ecoa="http://www.ecoa.technology/logicalsystem-2.0" id="cs1">
+
+  <!-- Platform 1: YYY 应用(嵌入式设备), 运行 compYYYDevice -->
+  <logicalComputingPlatform ELIPlatformId="1" id="Platform_YYY">
+    <logicalComputingNode id="machine_yyy">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="6"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+  <!-- Platform 2: 电子自卫应用, 运行 compVoiceMgmt 和 compLLMModel -->
+  <logicalComputingPlatform ELIPlatformId="2" id="Platform_EW">
+    <logicalComputingNode id="machine_ew">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="6"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+  <!-- Platform 3: XXX 应用(智能语音设备), 运行 compXXXDevice -->
+  <logicalComputingPlatform ELIPlatformId="3" id="Platform_XXX">
+    <logicalComputingNode id="machine_xxx">
+      <endianess type="LITTLE"/>
+      <logicalProcessors number="4" type="x86_64">
+        <stepDuration nanoSeconds="147376"/>
+      </logicalProcessors>
+      <os name="linux"/>
+      <availableMemory gigaBytes="6"/>
+      <moduleSwitchTime microSeconds="10"/>
+    </logicalComputingNode>
+  </logicalComputingPlatform>
+
+  <!--
+    跨平台 TCP 链路(点对点 ELI), 即需求中的"中间件":
+    - link_EW_to_YYY: 电子自卫 <-> YYY, 承载 struct2/struct1 两条 wire
+    - link_XXX_to_EW: XXX <-> 电子自卫, 承载语音消息 wire
+  -->
+  <logicalComputingPlatformLinks>
+    <link id="link_EW_to_YYY" from="Platform_EW" to="Platform_YYY">
+      <throughput megaBytesPerSecond="1000"/>
+      <latency microSeconds="50"/>
+      <transportBinding protocol="TCP" parameters="tcp.tcp-params.xml"/>
+    </link>
+    <link id="link_XXX_to_EW" from="Platform_XXX" to="Platform_EW">
+      <throughput megaBytesPerSecond="1000"/>
+      <latency microSeconds="50"/>
+      <transportBinding protocol="TCP" parameters="tcp.tcp-params.xml"/>
+    </link>
+  </logicalComputingPlatformLinks>
+
+</ecoa:logicalSystem>
+

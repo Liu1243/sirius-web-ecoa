@@ -1,0 +1,122 @@
+name: sirius-web-dev
+
+services:
+  # ============================================
+  # PostgreSQL 数据库 (开发环境本地 IDEA 连接)
+  # ============================================
+  postgres:
+    image: docker.1ms.run/postgres:15
+    command:
+      [
+        "postgres",
+        "-c",
+        "listen_addresses=*",
+      ]
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpwd
+      POSTGRES_DB: sirius-web-db
+    volumes:
+      - ./deployment/docker/postgres/pg_hba.conf:/tmp/pg_hba_custom.conf:ro
+      - ./deployment/docker/postgres/init-pg-hba.sh:/docker-entrypoint-initdb.d/init-pg-hba.sh:ro
+      - sirius-web-dev-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d sirius-web-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================
+  # ECOA Tools Service (Python/Flask)
+  # 执行真实 ecoa-exvt / mscigt / asctg / csmgvt / ldp 工具并调度 pipeline
+  # ============================================
+  ecoa-tools:
+    # 方式 1：每次构建时，给构建出来的新镜像打上指定的版本标签（例如 v1.0）
+    image: sirius-web-dev-ecoa-tools:${ECOA_TOOLS_TAG:-v1.0}
+    platform: linux/arm64   # 开发环境：Apple Silicon Mac，强制 arm64
+    build:
+      context: ./ecoa-tools
+      dockerfile: Dockerfile
+    
+    # 方式 2：如果您想直接运行刚才 docker images 里已经存在的版本（比如 v0.5），
+    # 请放开下面这行，并注释掉上面的 image: 和 build: 块。
+    # image: ecoa-tools:v0.5
+
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./workspace:/workspace    # 挂载本地 workspace 目录
+      - ./ecoa-tools/app:/app/app    # 挂载 Python 应用代码，变更即时生效
+      - ./ecoa-tools/main.py:/app/main.py:ro  # 挂载入口文件
+      - ./ecoa-tools/config.yaml:/app/config.yaml  # 挂载配置文件，修改即时生效
+      - ./ecoa-tools/cmake:/app/cmake:ro  # cmake 交叉编译 toolchain 文件
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # projects_base_dir 指向共享 workspace
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      # Pipeline 调度依赖的环境变量
+      # 由于 sirius-web 运行在宿主机上，这里使用 host.docker.internal 访问宿主机的 8080 端口
+      # Mac/Windows Docker Desktop: host.docker.internal 自动可用
+      # Linux: 需要通过 extra_hosts 或 --add-host 映射
+      SIRIUS_WEB_URL: "${SIRIUS_WEB_URL:-http://host.docker.internal:8080}"
+      ECOA_WORKSPACE: "/workspace"
+      ECOA_DISTRIBUTED_DEBUG_CLIENT_CONTAINER: "code-server"
+    # host.docker.internal 映射 - 解决 Mac Docker Desktop 某些版本无法解析的问题
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Code Server Service (Web-based VS Code IDE)
+  # 基于 ecoa-tools 镜像构建，与 ecoa-tools 共享完全相同的编译和运行环境
+  # (Python venv / gcc / cmake / bison / flex / ecoa 工具链均可直接使用)
+  # ============================================
+  code-server:
+    # ⚠️  code-server 的 Dockerfile 以 ecoa-tools 镜像为 FROM 基础，
+    #    必须先构建 ecoa-tools，再构建 code-server。
+    #    请勿直接使用 docker compose up -d --build（并发构建会报错）。
+    #    推荐使用根目录 Makefile：make up  （自动保证顺序）
+    #    或手动：docker compose -f docker-compose.dev.yml build ecoa-tools &&
+    #            docker compose -f docker-compose.dev.yml up -d --build
+    image: sirius-web-dev-code-server:${CODE_SERVER_TAG:-v1.0}
+    platform: linux/arm64   # 开发环境：Apple Silicon Mac，强制 arm64
+    build:
+      context: .
+      dockerfile: Dockerfile.code-server
+      args:
+        CODE_SERVER_VERSION: "4.111.0"
+        # 开发环境使用本地构建的 ecoa-tools 镜像，避免从远程拉取
+        ECOA_TOOLS_BASE: sirius-web-dev-ecoa-tools:${ECOA_TOOLS_TAG:-v1.0}
+    depends_on:
+      ecoa-tools:
+        condition: service_healthy
+    container_name: code-server
+    environment:
+      TZ: Asia/Shanghai
+      PASSWORD: password              # Web UI 访问密码
+      # 确保终端中可直接使用 ecoa-tools venv 的 python/pip
+      VIRTUAL_ENV: /app/.venv
+      PATH: /app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      ECOA_PROJECTS_BASE_DIR: "/workspace"
+      ECOA_WORKSPACE: "/workspace"
+    volumes:
+      - code-server-config:/root/.local/share/code-server  # code-server 配置持久化
+      - ./workspace:/workspace                              # 与 ecoa-tools 共享 workspace
+      - ./ecoa-tools/cmake:/app/cmake:ro                   # cmake 交叉编译 toolchain 文件
+    ports:
+      - "8443:8080"   # 对外暴露 8443，容器内 code-server 监听 8080
+    restart: unless-stopped
+
+volumes:
+  sirius-web-dev-data:  # PostgreSQL 数据持久化
+  code-server-config:  # code-server 配置持久化

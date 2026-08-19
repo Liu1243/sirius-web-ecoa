@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  LLMModel: 大模型
+  - svc_voice_msg (服务): 接收 XXX 应用的语音消息(控制/查询)
+  - svc_json_cmd  (引用): 将语音控制消息解析为与 struct1 对应的 JSON(带 topicID),
+                          发送给语音管理服务 (功能(2))
+  - svc_vd_query  (引用): 收到语音查询消息后, 从语音管理服务获取 struct2 对应的 JSON (功能(3))
+-->
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:service name="svc_voice_msg">
+    <ecoa-sca:interface syntax="svc_voice_msg"/>
+  </csa:service>
+  <csa:reference name="svc_json_cmd">
+    <ecoa-sca:interface syntax="svc_json_cmd"/>
+  </csa:reference>
+  <csa:reference name="svc_vd_query">
+    <ecoa-sca:interface syntax="svc_vd_query"/>
+  </csa:reference>
+</csa:componentType>
+

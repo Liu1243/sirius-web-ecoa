@@ -1,0 +1,12 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/cmake_install.cmake",
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/platform/lib/cmake_install.cmake",
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/platform/svc_deserial/cmake_install.cmake",
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/0-Types/cmake_install.cmake",
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/platform/cmake_install.cmake",
+		"/Users/admin/code/sirius-web-ecoa/examples/Voice_EW_System/Voice_EW_Combined/6-output-YYY/build/mycompYYYDevice/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

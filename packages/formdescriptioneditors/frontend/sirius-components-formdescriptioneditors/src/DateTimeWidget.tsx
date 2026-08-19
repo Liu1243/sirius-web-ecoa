@@ -1,0 +1,148 @@
+/*******************************************************************************
+ * Copyright (c) 2024, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+import { getCSSColor, useSelection } from '@eclipse-sirius/sirius-components-core';
+import { DateTimeStyleProps } from '@eclipse-sirius/sirius-components-forms';
+import HelpOutlineOutlined from '@mui/icons-material/HelpOutlineOutlined';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useEffect, useRef, useState } from 'react';
+import { makeStyles } from 'tss-react/mui';
+import { DataTimeWidgetState } from './DateTimeWidget.types';
+import { DateTimeWidgetProps } from './WidgetEntry.types';
+
+const useDataTimeWidgetStyles = makeStyles<DateTimeStyleProps>()(
+  (theme, { backgroundColor, foregroundColor, italic, bold, gridLayout }) => {
+    const {
+      gridTemplateColumns,
+      gridTemplateRows,
+      labelGridColumn,
+      labelGridRow,
+      widgetGridColumn,
+      widgetGridRow,
+      gap,
+    } = {
+      ...gridLayout,
+    };
+    return {
+      style: {
+        backgroundColor: backgroundColor ? getCSSColor(backgroundColor, theme) : undefined,
+        color: foregroundColor ? getCSSColor(foregroundColor, theme) : undefined,
+        fontStyle: italic ? 'italic' : undefined,
+        fontWeight: bold ? 'bold' : undefined,
+      },
+      selected: {
+        color: theme.palette.primary.main,
+      },
+      input: {},
+      propertySection: {
+        display: 'grid',
+        gridTemplateColumns,
+        gridTemplateRows,
+        alignItems: 'center',
+        gap: gap ?? '',
+      },
+      propertySectionLabel: {
+        gridColumn: labelGridColumn,
+        gridRow: labelGridRow,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      },
+      propertySectionWidget: {
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
+        gridColumn: widgetGridColumn,
+        gridRow: widgetGridRow,
+      },
+    };
+  }
+);
+
+export const DateTimeWidget = ({ widget }: DateTimeWidgetProps) => {
+  const props: DateTimeStyleProps = {
+    backgroundColor: widget.style?.backgroundColor ?? null,
+    foregroundColor: widget.style?.foregroundColor ?? null,
+    italic: widget.style?.italic ?? null,
+    bold: widget.style?.bold ?? null,
+    gridLayout: widget.style?.widgetGridLayout ?? null,
+  };
+  const { classes } = useDataTimeWidgetStyles(props);
+
+  const [state, setState] = useState<DataTimeWidgetState>({
+    selected: false,
+  });
+  const { selection } = useSelection();
+  const ref = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (ref.current && selection.entries.find((entry) => entry.id === widget.id)) {
+      ref.current.focus();
+      setState((prevState) => ({ ...prevState, selected: true }));
+    } else {
+      setState((prevState) => ({ ...prevState, selected: false }));
+    }
+  }, [selection, widget]);
+
+  const { value, type } = getValueAndType(widget.type);
+
+  return (
+    <div className={classes.propertySection}>
+      <div className={classes.propertySectionLabel}>
+        <Typography variant="subtitle2" className={state.selected ? classes.selected : ''}>
+          {widget.label}
+        </Typography>
+        {widget.hasHelpText ? <HelpOutlineOutlined color="secondary" style={{ marginLeft: 8, fontSize: 16 }} /> : null}
+      </div>
+      <div className={classes.propertySectionWidget}>
+        <TextField
+          variant="standard"
+          id="datetime"
+          type={type}
+          value={value}
+          onFocus={() => setState((prevState) => ({ ...prevState, selected: true }))}
+          onBlur={() => setState((prevState) => ({ ...prevState, selected: false }))}
+          InputProps={
+            widget.style
+              ? {
+                  className: classes.style,
+                }
+              : {}
+          }
+          inputProps={{
+            'data-testid': `datetime-${widget.label}`,
+            className: classes.input,
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+const getValueAndType = (dateTimeType: string): { value: string; type: string } => {
+  const dateTime = new Date();
+
+  // Get the local date and time components
+  const year = String(dateTime.getFullYear()).padStart(4, '0');
+  const month = String(dateTime.getMonth() + 1).padStart(2, '0');
+  const day = String(dateTime.getDate()).padStart(2, '0');
+  const hours = String(dateTime.getHours()).padStart(2, '0');
+  const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+
+  if (dateTimeType === 'DATE') {
+    return { value: `${year}-${month}-${day}`, type: 'date' };
+  } else if (dateTimeType === 'TIME') {
+    return { value: `${hours}:${minutes}`, type: 'time' };
+  }
+  return { value: `${year}-${month}-${day}T${hours}:${minutes}`, type: 'datetime-local' };
+};

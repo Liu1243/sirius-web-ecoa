@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  VoiceManagement: 语音管理服务
+  - svc_versioned_data (引用): 周期性接收 YYY 应用经中间件发来的 struct2, 实时缓存,
+                               并据此修改 struct1 设备状态信息 (功能(1))
+  - svc_event_data    (服务): 将修改后的 struct1 经中间件发送给 YYY 应用 (功能(2))
+  - svc_json_cmd      (服务): 接收大模型解析出的带 topicID 的 JSON 控制指令,
+                               按 topicID 查找 struct1 并据此修改 (功能(2))
+  - svc_vd_query      (服务): 应答大模型对 struct2 对应 JSON 的查询 (功能(3))
+-->
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:service name="svc_event_data">
+    <ecoa-sca:interface syntax="svc_event_data"/>
+  </csa:service>
+  <csa:service name="svc_json_cmd">
+    <ecoa-sca:interface syntax="svc_json_cmd"/>
+  </csa:service>
+  <csa:service name="svc_vd_query">
+    <ecoa-sca:interface syntax="svc_vd_query"/>
+  </csa:service>
+  <csa:reference name="svc_versioned_data">
+    <ecoa-sca:interface syntax="svc_versioned_data"/>
+  </csa:reference>
+</csa:componentType>
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  YYYDevice: YYY 应用(嵌入式设备)
+  功能(1): 周期性(5s)向电子自卫应用发送版本化数据 struct2  -> 提供 svc_versioned_data
+  功能(2): 接收电子自卫应用的事件数据 struct1, 改变设备自身状态 -> 引用 svc_event_data
+-->
+<csa:componentType xmlns:csa="http://docs.oasis-open.org/ns/opencsa/sca/200912" xmlns:ecoa-sca="http://www.ecoa.technology/sca-extension-2.0">
+  <csa:service name="svc_versioned_data">
+    <ecoa-sca:interface syntax="svc_versioned_data"/>
+  </csa:service>
+  <csa:reference name="svc_event_data">
+    <ecoa-sca:interface syntax="svc_event_data"/>
+  </csa:reference>
+</csa:componentType>
+

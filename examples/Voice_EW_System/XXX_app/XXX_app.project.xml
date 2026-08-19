@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  XXX 应用(智能语音设备) ECOA 工程
+  功能: 发送 YYY 设备的查询指令(语音查询)和改变 YYY 设备状态(语音控制),
+        语音消息经中间件发往电子自卫应用的大模型。
+-->
+<ECOAProject xmlns="http://www.ecoa.technology/project-2.0" name="XXX_app">
+  <outputDirectory>6-output</outputDirectory>
+  <types>
+    <file>0-Types/Common_lib.types.xml</file>
+  </types>
+  <serviceDefinitions>
+    <file>1-Services/svc_voice_msg.interface.xml</file>
+  </serviceDefinitions>
+  <componentDefinitions>
+    <file>2-ComponentDefinitions/XXXDevice/XXXDevice.componentType</file>
+  </componentDefinitions>
+  <initialAssembly>3-InitialAssembly/demo.composite</initialAssembly>
+  <componentImplementations>
+    <file>4-ComponentImplementations/mycompXXXDevice/mycompXXXDevice.impl.xml</file>
+  </componentImplementations>
+  <implementationAssembly>5-Integration/demo.impl.composite</implementationAssembly>
+  <logicalSystem>5-Integration/cs1.logical-system.xml</logicalSystem>
+  <deploymentSchema>5-Integration/demo.deployment.xml</deploymentSchema>
+</ECOAProject>
+

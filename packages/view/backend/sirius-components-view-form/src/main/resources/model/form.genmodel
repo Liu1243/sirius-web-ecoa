@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    copyrightText="Copyright (c) 2021, 2025 Obeo.&#xA;This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v2.0&#xA;which accompanies this distribution, and is available at&#xA;https://www.eclipse.org/legal/epl-2.0/&#xA;&#xA;SPDX-License-Identifier: EPL-2.0&#xA;&#xA;Contributors:&#xA;    Obeo - initial API and implementation"
+    modelDirectory="/sirius-components-view-form/src/main/java" creationIcons="false"
+    editDirectory="/sirius-components-view-form-edit/src/main/java" editorDirectory=""
+    modelPluginID="sirius-components-view-form" modelName="Form" editPluginClass="org.eclipse.sirius.components.view.form.provider.FormEditPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    commentFormatting="true" importerID="org.eclipse.emf.importer.ecore" bundleManifest="false"
+    complianceLevel="17.0" copyrightFields="false" editPluginID="sirius-components-view-form-edit"
+    editorPluginID="sirius-components-view-form-editor" usedGenPackages="../../../../../sirius-components-view/src/main/resources/model/view.genmodel#//view"
+    operationReflection="true" importOrganizing="true" cleanup="true">
+  <foreignModel>form.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="Form" basePackage="org.eclipse.sirius.components.view" disposableProviderFactory="true"
+      extensibleProviderFactory="true" childCreationExtenders="true" ecorePackage="form.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="form.ecore#//FlexDirection">
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//FlexDirection/row"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//FlexDirection/rowReverse"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//FlexDirection/column"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//FlexDirection/columnReverse"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="form.ecore#//GroupDisplayMode">
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//GroupDisplayMode/LIST"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//GroupDisplayMode/TOGGLEABLE_AREAS"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="form.ecore#//ContainerBorderLineStyle">
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//ContainerBorderLineStyle/Solid"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//ContainerBorderLineStyle/Dashed"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//ContainerBorderLineStyle/Dotted"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="form.ecore#//DateTimeType">
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//DateTimeType/DATE_TIME"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//DateTimeType/DATE"/>
+      <genEnumLiterals ecoreEnumLiteral="form.ecore#//DateTimeType/TIME"/>
+    </genEnums>
+    <genClasses ecoreClass="form.ecore#//FormDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FormDescription/pages"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FormDescription/formVariables"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//FormVariable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormVariable/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormVariable/defaultValueExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//PageDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PageDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PageDescription/labelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PageDescription/domainType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PageDescription/semanticCandidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PageDescription/preconditionExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//PageDescription/groups"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//PageDescription/toolbarActions"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//GroupDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//GroupDescription/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//GroupDescription/labelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//GroupDescription/displayMode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//GroupDescription/semanticCandidatesExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//GroupDescription/toolbarActions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//GroupDescription/children"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//GroupDescription/borderStyle"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//GroupDescription/conditionalBorderStyles"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="form.ecore#//FormElementDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormElementDescription/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="form.ecore#//WidgetDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetDescription/labelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetDescription/helpExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetDescription/diagnosticsExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//BarChartDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescription/valuesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescription/keysExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescription/yAxisLabelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//BarChartDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//BarChartDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescription/width"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescription/height"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ButtonDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ButtonDescription/buttonLabelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ButtonDescription/body"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ButtonDescription/imageExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ButtonDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ButtonDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ButtonDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//CheckboxDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//CheckboxDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//CheckboxDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//CheckboxDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//CheckboxDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//CheckboxDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//DateTimeDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//DateTimeDescription/stringValueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//DateTimeDescription/body"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//DateTimeDescription/isEnabledExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//DateTimeDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//DateTimeDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//DateTimeDescription/type"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//FlexboxContainerDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FlexboxContainerDescription/children"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FlexboxContainerDescription/flexDirection"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FlexboxContainerDescription/IsEnabledExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FlexboxContainerDescription/borderStyle"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FlexboxContainerDescription/conditionalBorderStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ImageDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ImageDescription/urlExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ImageDescription/maxWidthExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//LabelDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//LabelDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//LabelDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//LabelDescription/conditionalStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//LinkDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//LinkDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//LinkDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//LinkDescription/conditionalStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ListDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ListDescription/valueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ListDescription/displayExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ListDescription/isDeletableExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ListDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ListDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//ListDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ListDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//MultiSelectDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//MultiSelectDescription/valueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//MultiSelectDescription/candidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//MultiSelectDescription/candidateLabelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//MultiSelectDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//MultiSelectDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//MultiSelectDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//MultiSelectDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//PieChartDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PieChartDescription/valuesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PieChartDescription/keysExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//PieChartDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//PieChartDescription/conditionalStyles"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//RadioDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RadioDescription/valueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RadioDescription/candidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RadioDescription/candidateLabelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//RadioDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//RadioDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//RadioDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RadioDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//RichTextDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RichTextDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//RichTextDescription/body"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//RichTextDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//SelectDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SelectDescription/valueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SelectDescription/candidatesExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SelectDescription/candidateLabelExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//SelectDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//SelectDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//SelectDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SelectDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//SplitButtonDescription">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//SplitButtonDescription/actions"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SplitButtonDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//TextAreaDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TextAreaDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextAreaDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextAreaDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextAreaDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TextAreaDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//TextfieldDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TextfieldDescription/valueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextfieldDescription/body"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextfieldDescription/style"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TextfieldDescription/conditionalStyles"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TextfieldDescription/IsEnabledExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//TreeDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/childrenExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/treeItemLabelExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/isTreeItemSelectableExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/treeItemBeginIconExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/treeItemEndIconsExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/isCheckableExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/checkedValueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//TreeDescription/IsEnabledExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//TreeDescription/body"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//SliderDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SliderDescription/minValueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SliderDescription/maxValueExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SliderDescription/currentValueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//SliderDescription/body"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SliderDescription/isEnabledExpression"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="form.ecore#//WidgetDescriptionStyle"/>
+    <genClasses image="false" ecoreClass="form.ecore#//WidgetGridLayout">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/gridTemplateColumns"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/gridTemplateRows"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/labelGridRow"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/labelGridColumn"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/widgetGridRow"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/widgetGridColumn"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//WidgetGridLayout/gap"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//BarChartDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//BarChartDescriptionStyle/barsColor"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalBarChartDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//ButtonDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//ButtonDescriptionStyle/backgroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//ButtonDescriptionStyle/foregroundColor"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalButtonDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//CheckboxDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//CheckboxDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalCheckboxDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//DateTimeDescriptionStyle">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference form.ecore#//DateTimeDescriptionStyle/backgroundColor"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference form.ecore#//DateTimeDescriptionStyle/foregroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//DateTimeDescriptionStyle/italic"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//DateTimeDescriptionStyle/bold"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalDateTimeDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//LabelDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//LabelDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalLabelDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//LinkDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//LinkDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalLinkDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//ListDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//ListDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalListDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//MultiSelectDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//MultiSelectDescriptionStyle/backgroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//MultiSelectDescriptionStyle/foregroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//MultiSelectDescriptionStyle/showIcon"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalMultiSelectDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//PieChartDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PieChartDescriptionStyle/colors"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//PieChartDescriptionStyle/strokeWidth"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//PieChartDescriptionStyle/strokeColor"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalPieChartDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//RadioDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//RadioDescriptionStyle/color"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalRadioDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//SelectDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//SelectDescriptionStyle/backgroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//SelectDescriptionStyle/foregroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//SelectDescriptionStyle/showIcon"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalSelectDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//TextareaDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//TextareaDescriptionStyle/backgroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//TextareaDescriptionStyle/foregroundColor"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalTextareaDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//TextfieldDescriptionStyle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//TextfieldDescriptionStyle/backgroundColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference form.ecore#//TextfieldDescriptionStyle/foregroundColor"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalTextfieldDescriptionStyle"/>
+    <genClasses ecoreClass="form.ecore#//ContainerBorderStyle">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference form.ecore#//ContainerBorderStyle/borderColor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ContainerBorderStyle/borderRadius"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ContainerBorderStyle/borderSize"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//ContainerBorderStyle/borderLineStyle"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//ConditionalContainerBorderStyle"/>
+    <genClasses ecoreClass="form.ecore#//FormElementFor">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormElementFor/iterator"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormElementFor/iterableExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FormElementFor/children"/>
+    </genClasses>
+    <genClasses ecoreClass="form.ecore#//FormElementIf">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute form.ecore#//FormElementIf/predicateExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference form.ecore#//FormElementIf/children"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

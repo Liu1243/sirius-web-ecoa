@@ -1,0 +1,156 @@
+/*******************************************************************************
+ * Copyright (c) 2019, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.components.diagrams;
+
+import java.text.MessageFormat;
+import java.util.Objects;
+
+import org.eclipse.sirius.components.annotations.Immutable;
+
+/**
+ * The style of the edge.
+ *
+ * @author sbegaudeau
+ */
+@Immutable
+public final class EdgeStyle {
+
+    private int size;
+
+    private LineStyle lineStyle;
+
+    private ArrowStyle sourceArrow;
+
+    private ArrowStyle targetArrow;
+
+    private String color;
+
+    private EdgeType edgeType;
+
+    private EdgeStyle() {
+        // Prevent instantiation
+    }
+
+    public static Builder newEdgeStyle() {
+        return new Builder();
+    }
+
+    public static Builder newEdgeStyle(EdgeStyle sourceEdgeStyle) {
+        return new Builder(sourceEdgeStyle);
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public LineStyle getLineStyle() {
+        return this.lineStyle;
+    }
+
+    public ArrowStyle getSourceArrow() {
+        return this.sourceArrow;
+    }
+
+    public ArrowStyle getTargetArrow() {
+        return this.targetArrow;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
+
+    public EdgeType getEdgeType() {
+        return this.edgeType;
+    }
+
+    @Override
+    public String toString() {
+        String pattern = "{0} '{'size: {1}, lineStyle: {2}, sourceArrow: {3}, targetArrow: {4}, color: {5}'}'";
+        return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.size, this.lineStyle, this.sourceArrow, this.targetArrow, this.color);
+    }
+
+    /**
+     * The builder used to create the edge style.
+     *
+     * @author hmarchadour
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
+    public static final class Builder {
+
+        private int size;
+
+        private LineStyle lineStyle;
+
+        private ArrowStyle sourceArrow;
+
+        private ArrowStyle targetArrow;
+
+        private String color;
+
+        private EdgeType edgeType;
+
+        private Builder() {
+            // Prevent instantiation
+        }
+
+        private Builder(EdgeStyle sourceEdgeStyle) {
+            this.size = sourceEdgeStyle.getSize();
+            this.lineStyle = sourceEdgeStyle.getLineStyle();
+            this.sourceArrow = sourceEdgeStyle.getSourceArrow();
+            this.targetArrow = sourceEdgeStyle.getTargetArrow();
+            this.color = sourceEdgeStyle.getColor();
+            this.edgeType = sourceEdgeStyle.getEdgeType();
+        }
+
+        public Builder size(int size) {
+            this.size = size;
+            return this;
+        }
+
+        public Builder lineStyle(LineStyle lineStyle) {
+            this.lineStyle = Objects.requireNonNull(lineStyle);
+            return this;
+        }
+
+        public Builder sourceArrow(ArrowStyle sourceArrow) {
+            this.sourceArrow = Objects.requireNonNull(sourceArrow);
+            return this;
+        }
+
+        public Builder targetArrow(ArrowStyle targetArrow) {
+            this.targetArrow = Objects.requireNonNull(targetArrow);
+            return this;
+        }
+
+        public Builder color(String color) {
+            this.color = Objects.requireNonNull(color);
+            return this;
+        }
+
+        public Builder edgeType(EdgeType edgeType) {
+            this.edgeType = Objects.requireNonNull(edgeType);
+            return this;
+        }
+
+        public EdgeStyle build() {
+            EdgeStyle edgeStyle = new EdgeStyle();
+            edgeStyle.size = this.size;
+            edgeStyle.lineStyle = Objects.requireNonNull(this.lineStyle);
+            edgeStyle.sourceArrow = Objects.requireNonNull(this.sourceArrow);
+            edgeStyle.targetArrow = Objects.requireNonNull(this.targetArrow);
+            edgeStyle.color = Objects.requireNonNull(this.color);
+            edgeStyle.edgeType = Objects.requireNonNull(this.edgeType);
+            return edgeStyle;
+        }
+    }
+}

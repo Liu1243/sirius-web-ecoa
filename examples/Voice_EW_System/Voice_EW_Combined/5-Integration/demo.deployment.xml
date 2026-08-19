@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://www.ecoa.technology/deployment-2.0"
+            finalAssembly="demo" logicalSystem="cs1">
+
+  <!-- YYY 应用: compYYYDevice 部署在 Platform_YYY -->
+  <protectionDomain name="YYY_PD">
+    <executeOn computingNode="machine_yyy" computingPlatform="Platform_YYY"/>
+    <deployedModuleInstance componentName="compYYYDevice"
+      moduleInstanceName="myYYYDevice_mod_inst" modulePriority="30"/>
+    <deployedTriggerInstance componentName="compYYYDevice"
+      triggerInstanceName="publish_timer" triggerPriority="10"/>
+  </protectionDomain>
+
+  <!-- 电子自卫应用: compVoiceMgmt / compLLMModel 部署在 Platform_EW -->
+  <protectionDomain name="VoiceMgmt_PD">
+    <executeOn computingNode="machine_ew" computingPlatform="Platform_EW"/>
+    <deployedModuleInstance componentName="compVoiceMgmt"
+      moduleInstanceName="myVoiceMgmt_mod_inst" modulePriority="30"/>
+  </protectionDomain>
+
+  <protectionDomain name="LLMModel_PD">
+    <executeOn computingNode="machine_ew" computingPlatform="Platform_EW"/>
+    <deployedModuleInstance componentName="compLLMModel"
+      moduleInstanceName="myLLMModel_mod_inst" modulePriority="30"/>
+  </protectionDomain>
+
+  <!-- XXX 应用: compXXXDevice 部署在 Platform_XXX -->
+  <protectionDomain name="XXX_PD">
+    <executeOn computingNode="machine_xxx" computingPlatform="Platform_XXX"/>
+    <deployedModuleInstance componentName="compXXXDevice"
+      moduleInstanceName="myXXXDevice_mod_inst" modulePriority="30"/>
+    <deployedTriggerInstance componentName="compXXXDevice"
+      triggerInstanceName="voice_timer" triggerPriority="10"/>
+  </protectionDomain>
+
+  <platformConfiguration computingPlatform="Platform_YYY"
+                         faultHandlerNotificationMaxNumber="8">
+    <computingNodeConfiguration computingNode="machine_yyy"/>
+  </platformConfiguration>
+
+  <platformConfiguration computingPlatform="Platform_EW"
+                         faultHandlerNotificationMaxNumber="8">
+    <computingNodeConfiguration computingNode="machine_ew"/>
+  </platformConfiguration>
+
+  <platformConfiguration computingPlatform="Platform_XXX"
+                         faultHandlerNotificationMaxNumber="8">
+    <computingNodeConfiguration computingNode="machine_xxx"/>
+  </platformConfiguration>
+
+  <!--
+    跨平台 wire 映射(平台内 wire 无需映射):
+    - compLLMModel -> compVoiceMgmt 两条 wire 同在 Platform_EW, 本地直连
+  -->
+  <!-- 数据流(1): YYY -> 语音管理, 经 link_EW_to_YYY -->
+  <wireMapping source="compVoiceMgmt/svc_versioned_data"
+               target="compYYYDevice/svc_versioned_data"
+               mappedOnLinkId="link_EW_to_YYY"/>
+
+  <!-- 数据流(2): 语音管理 -> YYY, 经 link_EW_to_YYY -->
+  <wireMapping source="compYYYDevice/svc_event_data"
+               target="compVoiceMgmt/svc_event_data"
+               mappedOnLinkId="link_EW_to_YYY"/>
+
+  <!-- 数据流(2)(3): XXX -> 大模型, 经 link_XXX_to_EW -->
+  <wireMapping source="compXXXDevice/svc_voice_msg"
+               target="compLLMModel/svc_voice_msg"
+               mappedOnLinkId="link_XXX_to_EW"/>
+
+</deployment>
+

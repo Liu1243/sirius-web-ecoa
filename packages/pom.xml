@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2022, 2025 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.eclipse.sirius</groupId>
+	<artifactId>sirius-components</artifactId>
+	<version>2025.12.5</version>
+
+	<name>sirius-components</name>
+	<description>Sirius Components</description>
+	<packaging>pom</packaging>
+
+	<properties>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/releng/backend/sirius-components-test-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
+		</repository>
+	</distributionManagement>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>dash-licenses-snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<modules>
+		<module>browser/backend</module>
+		<module>core/backend</module>
+		<module>tests/backend</module>
+		<module>charts/backend</module>
+		<module>diagrams/backend</module>
+		<module>gantt/backend</module>
+		<module>deck/backend</module>
+		<module>formdescriptioneditors/backend</module>
+		<module>forms/backend</module>
+		<module>tables/backend</module>
+		<module>selection/backend</module>
+		<module>trees/backend</module>
+		<module>validation/backend</module>
+		<module>portals/backend</module>
+		<module>domain/backend</module>
+		<module>view/backend</module>
+		<module>emf/backend</module>
+		<module>web/backend</module>
+		<module>task/backend</module>
+		<module>datatree/backend</module>
+		<module>starters/backend</module>
+		<module>ecoa/backend</module>
+		<module>edt/backend</module>
+		<module>papaya/backend</module>
+		<module>sirius-web/backend</module>
+		<module>releng/backend</module>
+	</modules>
+
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.sonarsource.scanner.maven</groupId>
+							<artifactId>sonar-maven-plugin</artifactId>
+							<version>5.3.0.6276</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>verify-iplog</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.dash</groupId>
+						<artifactId>license-tool-plugin</artifactId>
+						<version>0.0.1-SNAPSHOT</version>
+						<executions>
+							<execution>
+								<id>license-check</id>
+								<phase>compile</phase>
+								<goals>
+									<goal>license-check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

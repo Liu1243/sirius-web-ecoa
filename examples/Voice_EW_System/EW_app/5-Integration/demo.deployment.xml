@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://www.ecoa.technology/deployment-2.0"
+            finalAssembly="demo" logicalSystem="cs1">
+
+  <!-- 语音管理服务部署在 Platform_EW -->
+  <protectionDomain name="VoiceMgmt_PD">
+    <executeOn computingNode="machine_ew" computingPlatform="Platform_EW"/>
+    <deployedModuleInstance componentName="compVoiceMgmt"
+      moduleInstanceName="myVoiceMgmt_mod_inst" modulePriority="30"/>
+  </protectionDomain>
+
+  <!-- 大模型部署在 Platform_EW -->
+  <protectionDomain name="LLMModel_PD">
+    <executeOn computingNode="machine_ew" computingPlatform="Platform_EW"/>
+    <deployedModuleInstance componentName="compLLMModel"
+      moduleInstanceName="myLLMModel_mod_inst" modulePriority="30"/>
+  </protectionDomain>
+
+  <platformConfiguration computingPlatform="Platform_EW"
+                         faultHandlerNotificationMaxNumber="8">
+    <computingNodeConfiguration computingNode="machine_ew"/>
+  </platformConfiguration>
+
+</deployment>
+

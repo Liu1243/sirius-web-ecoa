@@ -1,0 +1,70 @@
+/*******************************************************************************
+ * Copyright (c) 2023, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+
+import { Theme, useTheme } from '@mui/material/styles';
+import { Node, NodeProps } from '@xyflow/react';
+import { memo, useMemo } from 'react';
+import { Label } from '../Label';
+import { useDrop } from '../drop/useDrop';
+import { useDropNodeStyle } from '../dropNode/useDropNodeStyle';
+import { IconLabelNodeData } from './IconsLabelNode.types';
+import { NodeComponentsMap } from './NodeTypes';
+
+const iconlabelStyle = (
+  style: React.CSSProperties,
+  theme: Theme,
+  selected: boolean,
+  hovered: boolean,
+  faded: boolean
+): React.CSSProperties => {
+  const iconLabelNodeStyle: React.CSSProperties = {
+    opacity: faded ? '0.4' : '',
+    ...style,
+  };
+
+  if (selected || hovered) {
+    iconLabelNodeStyle.outline = `${theme.palette.selected} solid 1px`;
+  }
+
+  return iconLabelNodeStyle;
+};
+
+export const IconLabelNode: NodeComponentsMap['iconLabelNode'] = memo(
+  ({ data, id, selected, dragging }: NodeProps<Node<IconLabelNodeData>>) => {
+    const theme = useTheme();
+    const { onDrop, onDragOver } = useDrop();
+    const { style: dropFeedbackStyle } = useDropNodeStyle(data.isDropNodeTarget, data.isDropNodeCandidate, dragging);
+    const nodeStyle = useMemo(
+      () => iconlabelStyle(data.style, theme, !!selected, data.isHovered, data.faded),
+      [data.style, selected, data.isHovered, data.faded]
+    );
+
+    const handleOnDrop = (event: React.DragEvent) => {
+      onDrop(event, id);
+    };
+
+    return (
+      <div
+        style={{
+          ...nodeStyle,
+          ...dropFeedbackStyle,
+        }}
+        data-svg="rect"
+        onDragOver={onDragOver}
+        onDrop={handleOnDrop}
+        data-testid={`IconLabel - ${data?.insideLabel?.text}`}>
+        {data.insideLabel ? <Label diagramElementId={id} label={data.insideLabel} faded={data.faded} /> : null}
+      </div>
+    );
+  }
+);

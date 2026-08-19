@@ -1,0 +1,10 @@
+{
+    "validationView": {
+        "diagnosticCount": "{{count}} 个诊断",
+        "diagnosticCount_one": "{{count}} 个诊断",
+        "diagnosticCount_other": "{{count}} 个诊断",
+        "noDiagnostic": "没有可用的诊断信息",
+        "requiredFeature": "组件 '{{object}}' 的必填属性 '{{feature}}' 未设置",
+        "featureMinValues": "组件 '{{object}}' 的属性 '{{feature}}' 当前有 {{current}} 个值，但至少需要 {{min}} 个值"
+    }
+}

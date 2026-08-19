@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="diagram" nsURI="http://www.eclipse.org/sirius-web/diagram" nsPrefix="diagram">
+  <eClassifiers xsi:type="ecore:EEnum" name="ArrowStyle">
+    <eLiterals name="None"/>
+    <eLiterals name="OutputArrow" value="1"/>
+    <eLiterals name="InputArrow" value="2"/>
+    <eLiterals name="OutputClosedArrow" value="3"/>
+    <eLiterals name="InputClosedArrow" value="4"/>
+    <eLiterals name="OutputFillClosedArrow" value="5"/>
+    <eLiterals name="InputFillClosedArrow" value="6"/>
+    <eLiterals name="Diamond" value="7"/>
+    <eLiterals name="FillDiamond" value="8"/>
+    <eLiterals name="InputArrowWithDiamond" value="9"/>
+    <eLiterals name="InputArrowWithFillDiamond" value="10"/>
+    <eLiterals name="Circle" value="11" literal="Circle"/>
+    <eLiterals name="FillCircle" value="12" literal="FillCircle"/>
+    <eLiterals name="CrossedCircle" value="13" literal="CrossedCircle"/>
+    <eLiterals name="ClosedArrowWithVerticalBar" value="14" literal="ClosedArrowWithVerticalBar"/>
+    <eLiterals name="ClosedArrowWithDots" value="15" literal="ClosedArrowWithDots"/>
+    <eLiterals name="ClosedArrowWith4Dots" value="16" literal="ClosedArrowWith4Dots"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="LayoutDirection">
+    <eLiterals name="Column" literal="Column"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="LineStyle">
+    <eLiterals name="Solid"/>
+    <eLiterals name="Dash" value="1"/>
+    <eLiterals name="Dot" value="2"/>
+    <eLiterals name="Dash_Dot" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="NodeContainmentKind">
+    <eLiterals name="CHILD_NODE"/>
+    <eLiterals name="BORDER_NODE" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="SynchronizationPolicy">
+    <eLiterals name="SYNCHRONIZED"/>
+    <eLiterals name="UNSYNCHRONIZED" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="InsideLabelPosition">
+    <eLiterals name="TOP_CENTER"/>
+    <eLiterals name="TOP_LEFT" value="1" literal="TOP_LEFT"/>
+    <eLiterals name="TOP_RIGHT" value="2"/>
+    <eLiterals name="MIDDLE_LEFT" value="3"/>
+    <eLiterals name="MIDDLE_CENTER" value="4"/>
+    <eLiterals name="MIDDLE_RIGHT" value="5"/>
+    <eLiterals name="BOTTOM_LEFT" value="6"/>
+    <eLiterals name="BOTTOM_CENTER" value="7"/>
+    <eLiterals name="BOTTOM_RIGHT" value="8"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="OutsideLabelPosition">
+    <eLiterals name="BOTTOM_CENTER"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="LabelOverflowStrategy">
+    <eLiterals name="NONE"/>
+    <eLiterals name="WRAP" value="1"/>
+    <eLiterals name="ELLIPSIS" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ArrangeLayoutDirection">
+    <eLiterals name="UNDEFINED"/>
+    <eLiterals name="RIGHT" value="1"/>
+    <eLiterals name="DOWN" value="2"/>
+    <eLiterals name="LEFT" value="3"/>
+    <eLiterals name="UP" value="4"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="LabelTextAlign">
+    <eLiterals name="LEFT"/>
+    <eLiterals name="RIGHT" value="1"/>
+    <eLiterals name="CENTER" value="2"/>
+    <eLiterals name="JUSTIFY" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="UserResizableDirection">
+    <eLiterals name="BOTH"/>
+    <eLiterals name="HORIZONTAL" value="1"/>
+    <eLiterals name="VERTICAL" value="2"/>
+    <eLiterals name="NONE" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="HeaderSeparatorDisplayMode">
+    <eLiterals name="NEVER"/>
+    <eLiterals name="ALWAYS" value="1"/>
+    <eLiterals name="IF_CHILDREN" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EdgeType">
+    <eLiterals name="Manhattan" literal="Manhattan"/>
+    <eLiterals name="SmartManhattan" value="1" literal="SmartManhattan"/>
+    <eLiterals name="Oblique" value="2" literal="Oblique"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DiagramDescription" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//RepresentationDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="autoLayout" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="palette" eType="#//DiagramPalette"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="groupPalette" eType="#//GroupPalette"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeDescriptions" upperBound="-1"
+        eType="#//NodeDescription" containment="true" eKeys="#//DiagramElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeDescriptions" upperBound="-1"
+        eType="#//EdgeDescription" containment="true" eKeys="#//DiagramElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="arrangeLayoutDirection"
+        lowerBound="1" eType="#//ArrangeLayoutDirection" defaultValueLiteral="UNDEFINED"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DiagramElementDescription" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"
+        defaultValueLiteral="NewRepresentationDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//DomainType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="semanticCandidatesExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self.eContents()"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preconditionExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="synchronizationPolicy"
+        eType="#//SynchronizationPolicy"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NodeDescription" eSuperTypes="#//DiagramElementDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="collapsible" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="palette" eType="#//NodePalette"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
+        eType="#//Action" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//NodeStyleDescription"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalNodeStyle" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="childrenDescriptions" upperBound="-1"
+        eType="#//NodeDescription" containment="true" eKeys="#//DiagramElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borderNodesDescriptions"
+        upperBound="-1" eType="#//NodeDescription" containment="true" eKeys="#//DiagramElementDescription/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reusedChildNodeDescriptions"
+        upperBound="-1" eType="#//NodeDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reusedBorderNodeDescriptions"
+        upperBound="-1" eType="#//NodeDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="userResizable" lowerBound="1"
+        eType="#//UserResizableDirection" defaultValueLiteral="BOTH"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="defaultWidthExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="defaultHeightExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="keepAspectRatio" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isCollapsedByDefaultExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="insideLabel" eType="#//InsideLabelDescription"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outsideLabels" upperBound="-1"
+        eType="#//OutsideLabelDescription" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isHiddenByDefaultExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isFadedByDefaultExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgeDescription" eSuperTypes="#//DiagramElementDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="beginLabelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="centerLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self.name"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="endLabelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isDomainBasedEdge" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="palette" eType="#//EdgePalette"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceDescriptions" lowerBound="1"
+        upperBound="-1" eType="#//DiagramElementDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetDescriptions" lowerBound="1"
+        upperBound="-1" eType="#//DiagramElementDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="targetExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self.eCrossReferences()"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//EdgeStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalEdgeStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LayoutStrategyDescription" abstract="true"
+      interface="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="onWestAtCreationBorderNodes"
+        upperBound="-1" eType="#//NodeDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="onEastAtCreationBorderNodes"
+        upperBound="-1" eType="#//NodeDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="onSouthAtCreationBorderNodes"
+        upperBound="-1" eType="#//NodeDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="onNorthAtCreationBorderNodes"
+        upperBound="-1" eType="#//NodeDescription"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ListLayoutStrategyDescription" eSuperTypes="#//LayoutStrategyDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="areChildNodesDraggableExpression"
+        lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="topGapExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bottomGapExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="growableNodes" upperBound="-1"
+        eType="#//NodeDescription"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FreeFormLayoutStrategyDescription" eSuperTypes="#//LayoutStrategyDescription"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LabelDescription" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self.name"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="overflowStrategy" lowerBound="1"
+        eType="#//LabelOverflowStrategy"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="textAlign" lowerBound="1"
+        eType="#//LabelTextAlign"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InsideLabelDescription" eSuperTypes="#//LabelDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="position" lowerBound="1"
+        eType="#//InsideLabelPosition"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//InsideLabelStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalInsideLabelStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OutsideLabelDescription" eSuperTypes="#//LabelDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="position" lowerBound="1"
+        eType="#//OutsideLabelPosition"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//OutsideLabelStyle"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionalStyles" upperBound="-1"
+        eType="#//ConditionalOutsideLabelStyle" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Style" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="color" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BorderStyle" abstract="true" interface="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="borderColor" lowerBound="1"
+        eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderRadius" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="3"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderSize" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="borderLineStyle" eType="#//LineStyle"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InsideLabelStyle" eSuperTypes="#//NodeLabelStyle">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="withHeader" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="headerSeparatorDisplayMode"
+        lowerBound="1" eType="#//HeaderSeparatorDisplayMode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OutsideLabelStyle" eSuperTypes="#//NodeLabelStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NodeLabelStyle" abstract="true" interface="true"
+      eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//BorderStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="labelColor" lowerBound="1"
+        eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="background" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="showIconExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelIcon" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxWidthExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NodeStyleDescription" abstract="true"
+      interface="true" eSuperTypes="#//BorderStyle">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="childrenLayoutStrategy"
+        eType="#//LayoutStrategyDescription" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalNodeStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//NodeStyleDescription"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalInsideLabelStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//InsideLabelStyle"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalOutsideLabelStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="style" eType="#//OutsideLabelStyle"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RectangularNodeStyleDescription" eSuperTypes="#//NodeStyleDescription">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="background" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ImageNodeStyleDescription" eSuperTypes="#//NodeStyleDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shape" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positionDependentRotation"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IconLabelNodeStyleDescription" eSuperTypes="#//NodeStyleDescription">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="background" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgeStyle" eSuperTypes="#//Style ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//LabelStyle #//BorderStyle">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lineStyle" lowerBound="1"
+        eType="#//LineStyle" defaultValueLiteral="Solid"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceArrowStyle" lowerBound="1"
+        eType="#//ArrowStyle" defaultValueLiteral="None"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="targetArrowStyle" lowerBound="1"
+        eType="#//ArrowStyle" defaultValueLiteral="InputArrow"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="edgeWidth" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Length"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="showIcon" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labelIcon" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="background" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//UserColor"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxWidthExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="edgeType" lowerBound="1"
+        eType="#//EdgeType" defaultValueLiteral="Manhattan"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConditionalEdgeStyle" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Conditional #//EdgeStyle"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DiagramPalette">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dropTool" eType="#//DropTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dropNodeTool" eType="#//DropNodeTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quickAccessTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolSections" upperBound="-1"
+        eType="#//DiagramToolSection" containment="true" eKeys="#//ToolSection/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GroupPalette">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quickAccessTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolSections" upperBound="-1"
+        eType="#//ToolSection" containment="true" eKeys="#//ToolSection/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NodePalette">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deleteTool" eType="#//DeleteTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="labelEditTool" eType="#//LabelEditTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dropNodeTool" eType="#//DropNodeTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quickAccessTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeTools" upperBound="-1"
+        eType="#//EdgeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolSections" upperBound="-1"
+        eType="#//NodeToolSection" containment="true" eKeys="#//ToolSection/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgePalette">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deleteTool" eType="#//DeleteTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="centerLabelEditTool" eType="#//LabelEditTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="beginLabelEditTool" eType="#//LabelEditTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="endLabelEditTool" eType="#//LabelEditTool"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quickAccessTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeReconnectionTools"
+        upperBound="-1" eType="#//EdgeReconnectionTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeTools" upperBound="-1"
+        eType="#//EdgeTool" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toolSections" upperBound="-1"
+        eType="#//EdgeToolSection" containment="true" eKeys="#//ToolSection/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Tool" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"
+        defaultValueLiteral="Tool"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preconditionExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteTool" eSuperTypes="#//Tool"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DropTool" eSuperTypes="#//Tool"/>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgeTool" eSuperTypes="#//Tool">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetElementDescriptions"
+        upperBound="-1" eType="#//DiagramElementDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iconURLsExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dialogDescription" eType="#//DialogDescription"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="elementsToSelectExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgeReconnectionTool" abstract="true"
+      eSuperTypes="#//Tool"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LabelEditTool" eSuperTypes="#//Tool">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="initialDirectEditLabelExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NodeTool" eSuperTypes="#//Tool">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dialogDescription" eType="#//DialogDescription"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iconURLsExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="elementsToSelectExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="withImpactAnalysis" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SourceEdgeEndReconnectionTool" eSuperTypes="#//EdgeReconnectionTool"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TargetEdgeEndReconnectionTool" eSuperTypes="#//EdgeReconnectionTool"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CreateView" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="parentViewExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:selectedNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elementDescription" eType="#//DiagramElementDescription"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="semanticElementExpression"
+        lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:self"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variableName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="containmentKind" lowerBound="1"
+        eType="#//NodeContainmentKind" defaultValueLiteral="CHILD_NODE"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteView" eSuperTypes="../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="viewExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral="aql:selectedNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SelectionDialogDescription" eSuperTypes="#//DialogDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="selectionMessage" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="selectionDialogTreeDescription"
+        eType="#//SelectionDialogTreeDescription" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="multiple" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ToolSection" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"
+        defaultValueLiteral="Tool Section"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DiagramToolSection" eSuperTypes="#//ToolSection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NodeToolSection" eSuperTypes="#//ToolSection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeTools" upperBound="-1"
+        eType="#//EdgeTool" containment="true" eKeys="#//Tool/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EdgeToolSection" eSuperTypes="#//ToolSection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeTools" upperBound="-1"
+        eType="#//NodeTool" containment="true" eKeys="#//Tool/name"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DropNodeTool" eSuperTypes="#//Tool">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="acceptedNodeTypes" upperBound="-1"
+        eType="#//NodeDescription"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DialogDescription" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SelectionDialogTreeDescription">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="elementsExpression" lowerBound="1"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="childrenExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isSelectableExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Identifier"
+        defaultValueLiteral="Action"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tooltipExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iconURLsExpression" eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preconditionExpression"
+        eType="ecore:EDataType ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//InterpretedExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="body" upperBound="-1" eType="ecore:EClass ../../../../../sirius-components-view/src/main/resources/model/view.ecore#//Operation"
+        containment="true"/>
+  </eClassifiers>
+</ecore:EPackage>

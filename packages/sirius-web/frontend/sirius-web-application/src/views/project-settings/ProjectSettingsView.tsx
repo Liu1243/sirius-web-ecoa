@@ -1,0 +1,188 @@
+/*******************************************************************************
+ * Copyright (c) 2022, 2025 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+import { useComponent, useData } from '@eclipse-sirius/sirius-components-core';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import { SyntheticEvent } from 'react';
+import { generatePath, Navigate, Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { makeStyles } from 'tss-react/mui';
+import { footerExtensionPoint } from '../../footer/FooterExtensionPoints';
+import { NavigationBar } from '../../navigationBar/NavigationBar';
+import {
+  ProjectSettingsParams,
+  ProjectSettingTabContribution,
+  ProjectSettingTabProps,
+} from './ProjectSettingsView.types';
+import { projectSettingsTabExtensionPoint } from './ProjectSettingsViewExtensionPoints';
+import { useProjectAndProjectSettingTabCapabilities } from './useProjectAndProjectSettingTabCapabilities';
+import { GQLProject, GQLProjectSettingsCapabilities } from './useProjectAndProjectSettingTabCapabilities.types';
+
+const useProjectSettingsViewStyles = makeStyles()((theme) => ({
+  projectSettingsView: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gridTemplateRows: 'min-content 1fr min-content',
+    minHeight: '100vh',
+  },
+  center: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  titleLabel: {
+    marginRight: theme.spacing(2),
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '100ch',
+    color: 'inherit',
+  },
+  main: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
+  },
+  header: {
+    display: 'grid',
+    gridTemplateColumns: '1fr max-content',
+    alignItems: 'center',
+    padding: theme.spacing(3),
+  },
+  tabs: {
+    display: 'grid',
+    gridTemplateColumns: '200px 1fr',
+    gridTemplateRows: '1fr',
+    gap: theme.spacing(4),
+  },
+  tab: {
+    justifyContent: 'start',
+    minHeight: 0,
+  },
+  noSettingsFound: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: theme.spacing(20),
+  },
+}));
+
+import { useTranslation } from 'react-i18next';
+
+export const ProjectSettingsView = () => {
+  const { classes } = useProjectSettingsViewStyles();
+  const { t } = useTranslation('sirius-web-application', { keyPrefix: 'projectSettingsView' });
+  const { t: tGlobal } = useTranslation('sirius-web-application');
+  const { projectId, tabId } = useParams<ProjectSettingsParams>();
+  const { data: projectSettingsTabContributions } = useData(projectSettingsTabExtensionPoint);
+  const { loading, data } = useProjectAndProjectSettingTabCapabilities(
+    projectId,
+    projectSettingsTabContributions.map((tab) => tab.id)
+  );
+
+  const project: GQLProject | null = data?.viewer.project;
+
+  const navigate = useNavigate();
+  const handleTabChange = (_event: SyntheticEvent, tabId: string) => {
+    const pathname = generatePath('/projects/:projectId/settings/:tabId', {
+      projectId,
+      tabId,
+    });
+    navigate(pathname);
+  };
+  const { Component: Footer } = useComponent(footerExtensionPoint);
+
+  const settings: GQLProjectSettingsCapabilities | null = data?.viewer.project.capabilities.settings;
+
+  const viewableTabContributions: ProjectSettingTabContribution[] = projectSettingsTabContributions.filter(
+    (contribution) => settings?.tabs.find((tab) => tab.tabId === contribution.id && tab.canView)
+  );
+
+  const selectedTabId: string | null =
+    tabId && viewableTabContributions.find((tab) => tab.id == tabId) ? tabId : viewableTabContributions[0]?.id ?? null;
+  const settingContentContribution: ProjectSettingTabContribution | null = selectedTabId
+    ? viewableTabContributions.filter((contribution) => contribution.id === selectedTabId)[0]
+    : null;
+
+  const SettingContent: () => JSX.Element = () => {
+    if (settingContentContribution) {
+      const { component: Component } = settingContentContribution;
+
+      const props: ProjectSettingTabProps = {};
+      return <Component {...props} />;
+    }
+    return null;
+  };
+
+  if (loading) {
+    return null;
+  }
+  if (!project || !project.capabilities.settings.canView) {
+    return <Navigate to="/errors/404" replace />;
+  }
+  if (tabId && !viewableTabContributions.find((tab) => tab.id === tabId)) {
+    return <Navigate to="/errors/404" replace />;
+  }
+
+  const { id, name } = project;
+  const hasSettings = viewableTabContributions.length > 0 && settingContentContribution != null;
+
+  return (
+    <div className={classes.projectSettingsView}>
+      <NavigationBar>
+        <div className={classes.center}>
+          <div className={classes.title}>
+            <Link
+              variant="h6"
+              component={RouterLink}
+              to={`/projects/${id}/edit`}
+              noWrap
+              className={classes.titleLabel}
+              data-testid={`navbar-title`}>
+              {name}
+            </Link>
+          </div>
+        </div>
+      </NavigationBar>
+      <main className={classes.main}>
+        <Container maxWidth="xl">
+          <div className={classes.header}>
+            <Typography variant="h4">{t('title')}</Typography>
+          </div>
+          {hasSettings ? (
+            <div className={classes.tabs}>
+              <Tabs value={selectedTabId} onChange={handleTabChange} orientation="vertical">
+                {viewableTabContributions.map(({ id, title, icon }) => (
+                  <Tab className={classes.tab} label={tGlobal(`projectSettingsTabs.${id}`, { defaultValue: title })} icon={icon} iconPosition="start" key={id} value={id} />
+                ))}
+              </Tabs>
+              <SettingContent />
+            </div>
+          ) : (
+            <div className={classes.noSettingsFound}>
+              <Typography variant="h5">{t('noSettingsFound')}</Typography>
+            </div>
+          )}
+        </Container>
+      </main>
+      <Footer />
+    </div>
+  );
+};

@@ -1,0 +1,29 @@
+{
+  "deleteMenuItem": {
+    "delete": "删除"
+  },
+  "renameMenuItem": {
+    "rename": "重命名"
+  },
+  "treeFiltersMenu": {
+    "filters": "过滤器"
+  },
+  "treeItemDirectEditInput": {
+    "enterNewValue": "输入新值",
+    "errors": {
+      "unexpected": "发生意外错误，请刷新页面重试"
+    }
+  },
+  "revealSelectionButton": {
+    "tooltip": "显示选中的元素",
+    "tooltipLoading": "显示选中的元素（正在加载详情...）",
+    "tooltipWithMoreLabels": "选择 {{labels}}（还有 {{count}} 个）",
+    "tooltipWithLabels": "选择 {{labels}}"
+  },
+  "treeItemContextMenu": {
+    "showInTarget": "在 {{target}} 中显示"
+  },
+  "filterButton": {
+    "filter": "过滤"
+  }
+}
